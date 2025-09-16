@@ -9,16 +9,16 @@ demo: https://ipusiron.github.io/polybius-cipherlab/
 ---
 -->
 
-![GitHub Repo stars](https://img.shields.io/github/stars/ipusiron/polybius-cipherlab?style=social)  
-![GitHub forks](https://img.shields.io/github/forks/ipusiron/polybius-cipherlab?style=social)  
-![GitHub last commit](https://img.shields.io/github/last-commit/ipusiron/polybius-cipherlab)  
-![GitHub license](https://img.shields.io/github/license/ipusiron/polybius-cipherlab)  
-[![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-blue?logo=github)](https://ipusiron.github.io/polybius-cipherlab/)  
+# Polybius CipherLab - ポリュビオス暗号ツール
+
+![GitHub Repo stars](https://img.shields.io/github/stars/ipusiron/polybius-cipherlab?style=social) 
+![GitHub forks](https://img.shields.io/github/forks/ipusiron/polybius-cipherlab?style=social) 
+![GitHub last commit](https://img.shields.io/github/last-commit/ipusiron/polybius-cipherlab) 
+![GitHub license](https://img.shields.io/github/license/ipusiron/polybius-cipherlab) 
+[![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-blue?logo=github)](https://ipusiron.github.io/polybius-cipherlab/) 
 
 **Day066 - 生成AIで作るセキュリティツール100**
 
-
-# Polybius CipherLab - ポリュビオス暗号ツール
 
 **Polybius CipherLab**は、古代ギリシャの歴史的暗号「ポリュビオス暗号」を学べるWebアプリです。
 
