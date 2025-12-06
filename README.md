@@ -1,11 +1,38 @@
 <!--
 ---
-title: Polybius CipherLab
-category: classical-cryptography
+id: day067
+slug: polybius-cipherlab
+
+title: "Polybius CipherLab"
+
+subtitle_ja: "ポリュビオス暗号ツール"
+subtitle_en: "Polybius Cipher Visualization Tool"
+
+description_ja: "古代ギリシャの歴史的暗号「ポリュビオス暗号」を学べるWebアプリ。文字を数字ペアに変換するチェッカー盤を使い、暗号化・復号の仕組みを可視化します。"
+description_en: "Visualize and practice the Polybius cipher using the historic checkerboard system. Convert letters to number pairs and learn ancient Greek cryptography."
+
+category_ja:
+  - 古典暗号
+  - 換字式暗号
+category_en:
+  - Classical Cryptography
+  - Subsutitution Cipher
+
 difficulty: 1
-description: Visualize and practice the Polybius cipher using the historic "checkerboard" system.
-tags: [polybius, cipher, classical, cryptography, checkerboard, education]
-demo: https://ipusiron.github.io/polybius-cipherlab/
+
+tags:
+  - polybius
+  - cipher
+  - classical
+  - cryptography
+  - checkerboard
+  - education
+  - visualization
+
+repo_url: "https://github.com/ipusiron/polybius-cipherlab"
+demo_url: "https://ipusiron.github.io/polybius-cipherlab/"
+
+hub: true
 ---
 -->
 
