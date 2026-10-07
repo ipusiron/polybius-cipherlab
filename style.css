@@ -220,6 +220,57 @@ textarea{resize:vertical}
 .mt{margin-top:10px}
 .gap{gap:10px; margin-top:8px}
 
+/* くらべるタブ */
+.cmp-list{
+  display:grid;
+  gap:10px;
+  margin:10px 0 20px;
+}
+.cmp-item{
+  padding:10px 12px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+.cmp-item.base{border-color:var(--primary)}
+.cmp-head{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:baseline;
+  justify-content:space-between;
+  margin-bottom:6px;
+}
+.cmp-note{color:var(--muted); font-size:13px}
+.cmp-item.base .cmp-note{color:var(--primary)}
+.cmp-cipher{
+  display:block;
+  font-family:'Consolas', 'Monaco', monospace;
+  font-size:14px;
+  color:var(--accent);
+  overflow-wrap:anywhere;
+}
+.cmp-grid{
+  display:grid;
+  gap:14px;
+  grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+  margin:10px 0 10px;
+}
+.cmp-square .cmp-name{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:4px;
+}
+.cmp-square .matrix-wrapper{
+  margin:0;
+  max-width:100%;
+}
+.cmp-square .matrix .cell{
+  font-size:clamp(11px, 2.4vw, 15px);
+  border-radius:8px;
+}
+.cmp-grid .hint{grid-column:1 / -1; margin:0}
+
 /* 詳しい設定（ほかのツールの流儀に合わせる） */
 .advanced{
   margin:10px 0;

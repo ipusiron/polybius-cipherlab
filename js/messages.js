@@ -63,6 +63,13 @@
     'adv.colLabels': '列のラベル',
     'adv.labelsInvalid': 'ラベルは{size}文字で、同じ文字を重ねずに入れてください。いまは既定の{fallback}で計算しています。',
 
+    'cmp.base': '基準',
+    'cmp.diff': '基準と違うペアが{count}個',
+    'cmp.same': '基準と同じ暗号文',
+    'cmp.lengthDiff': '暗号文の長さが変わる（{chars}を暗号化できない）',
+    'cmp.keywordHint': 'キーワードを入れると、5通りの違いが出ます。',
+    'cmp.empty': '平文を入れてください。',
+
     'matrix.cellLabel': '{char}（{row}行{col}列） ペア{pair}',
     'matrix.corner': '行＼列',
 
