@@ -385,6 +385,18 @@ footer{
 #tab-history strong{
   color:var(--text);
 }
+#tab-history .code-block{
+  color:var(--text);
+  font-size:15px;
+}
+#tab-history .source{
+  border-left:3px solid var(--border);
+  padding-left:12px;
+  font-size:14px;
+}
+#tab-history .source-list{
+  font-size:13px;
+}
 
 .help-icon{
   display:inline-flex;

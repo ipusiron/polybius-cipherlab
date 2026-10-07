@@ -3,7 +3,10 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 
-export const read = (f) => fs.readFileSync(new URL(`../${f}`, import.meta.url), 'utf8');
+// 改行は LF にそろえて読む（作業ツリーは CRLF、GitHub Pages の配信は LF）
+const CRLF = new RegExp(String.fromCharCode(13) + String.fromCharCode(10), 'g');
+export const read = (f) =>
+  fs.readFileSync(new URL(`../${f}`, import.meta.url), 'utf8').replace(CRLF, String.fromCharCode(10));
 
 const loaded = new Set();
 export function load(file) {
