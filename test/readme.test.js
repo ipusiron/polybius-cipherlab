@@ -71,6 +71,36 @@ test('座学タブの変換の例（1文字ずつ）がコードの出力と一�
   }
 });
 
+test('README の設定の表が、計算部の選択肢と食い違っていない', () => {
+  const table = readme.match(/\| 25マスに収める方法 \| ([^|]+)\|/);
+  assert.ok(table, '設定の表がない');
+  const merges = table[1].trim().split('／');
+  assert.equal(merges.length, Object.keys(C.MERGES).length);
+  const fills = readme.match(/\| キーワードのあとの並べ方 \| ([^|]+)\|/);
+  assert.ok(fills);
+  assert.equal(fills[1].trim().split('／').length, C.FILLS.length);
+  const orders = readme.match(/\| 座標の順 \| ([^|]+)\|/);
+  assert.ok(orders);
+  assert.equal(orders[1].trim().split('／').length, C.ORDERS.length);
+  // 画面のプリセットが4つとも README に出ている
+  for (const name of ['このツールの既定', 'Crypto Corner', 'ADFGX', 'タップ符号']) {
+    assert.ok(readme.includes(name), `プリセット ${name} の説明がない`);
+  }
+});
+
+test('画面のプリセットと計算部の値が食い違っていない', () => {
+  const script = read('script.js');
+  const block = script.match(/const PRESETS = \{([\s\S]*?)\};/);
+  assert.ok(block, 'PRESETS が見つからない');
+  const merges = [...block[1].matchAll(/merge: '(\w+)'/g)].map((m) => m[1]);
+  const fills = [...block[1].matchAll(/fill: '(\w+)'/g)].map((m) => m[1]);
+  const orders = [...block[1].matchAll(/order: '(\w+)'/g)].map((m) => m[1]);
+  for (const v of merges) assert.ok(C.MERGES[v], `知らない流儀: ${v}`);
+  for (const v of fills) assert.ok(C.FILLS.includes(v), `知らない充填順: ${v}`);
+  for (const v of orders) assert.ok(C.ORDERS.includes(v), `知らない座標の順: ${v}`);
+  assert.equal(merges.length, 4);
+});
+
 test('README の画像がすべて実在する', () => {
   const imgs = [...readme.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].map((m) => m[1]);
   const local = imgs.filter((u) => !u.startsWith('http'));

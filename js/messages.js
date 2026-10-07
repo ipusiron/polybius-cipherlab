@@ -19,7 +19,7 @@
     'status.outOfRange': '方陣にないペアが{count}個ありました（[ ]で囲んで残しています）。',
     'status.leftover': '2桁にならない数字が{count}個ありました（そのまま残しています）。',
     'status.symbols': '数字でない文字が{count}個ありました（そのまま残しています）。',
-    'status.ijNote': '5×5では i と j を見分けられません。文意から補ってください。',
+    'status.ambiguous': '{count}か所は{from}と{to}のどちらとも読めます（対応表に両方を出しています）。文意から補ってください。',
     'status.copied': 'コピーしました',
 
     'keyword.dropped': 'キーワードで使えない文字（{chars}）は除きました。',

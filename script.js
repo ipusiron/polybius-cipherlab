@@ -218,7 +218,7 @@
       left.textContent = it.left;
       const right = document.createElement('span');
       right.className = 'pair';
-      right.textContent = it.right;
+      right.textContent = it.alt ? `${it.right}（${it.alt}）` : it.right;
       li.append(left, document.createTextNode(' → '), right);
       list.appendChild(li);
     }
@@ -359,8 +359,15 @@
       if (s.outOfRange) parts.push(t('status.outOfRange', { count: s.outOfRange }));
       if (s.leftover) parts.push(t('status.leftover', { count: s.leftover }));
       if (s.symbols) parts.push(t('status.symbols', { count: s.symbols }));
-      // i が出たときだけ、j と見分けられないことを添える
-      if (square.mode === '5x5' && result.plain.includes('i')) parts.push(t('status.ijNote'));
+      // 読み替えのある流儀で、両方に読める文字が出たときだけ添える
+      if (s.ambiguous) {
+        const from = Object.keys(square.map)[0] || '';
+        parts.push(t('status.ambiguous', {
+          count: s.ambiguous,
+          from: (square.map[from] || '').toLowerCase(),
+          to: from.toLowerCase(),
+        }));
+      }
       setStatus('dec-status', parts);
 
       renderMapping('dec-map', result.mapping);
