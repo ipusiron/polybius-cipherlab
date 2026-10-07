@@ -3,12 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <meta http-equiv="X-Frame-Options" content="DENY" />
-  <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
-  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+  <meta name="referrer" content="no-referrer" />
   <title>Polybius CipherLab - Day067</title>
   <meta name="description" content="Polybius（ポリュビオス）暗号の可視化・学習用Webツール。5×5チェッカー盤／6×6拡張、キーワード生成、暗号化・復号の対応表をアニメ表示。" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -18,22 +17,26 @@
         <h1>Polybius CipherLab - ポリュビオス暗号の可視化ツール</h1>
         <p class="subtitle">ポリュビオスのチェッカー盤を用いて「アルファベット1文字⇔数字ペア」の変換を実現します</p>
       </div>
-      <button id="theme-toggle" class="theme-toggle" title="テーマを切り替え">
+      <button id="theme-toggle" class="theme-toggle" aria-label="ライトモードに切り替える">
         <span class="theme-icon">🌙</span>
       </button>
     </div>
   </header>
 
-  <nav class="tabs" role="tablist" aria-label="Polybius tabs">
-    <button class="tab active" data-tab="encrypt" role="tab" aria-selected="true">暗号化 (Encrypt)</button>
-    <button class="tab" data-tab="decrypt" role="tab" aria-selected="false">復号 (Decrypt)</button>
-    <button class="tab" data-tab="matrix" role="tab" aria-selected="false">マトリクス (Matrix)</button>
-    <button class="tab" data-tab="history" role="tab" aria-selected="false">座学 (Study)</button>
+  <nav class="tabs" role="tablist" aria-label="ツールの画面">
+    <button class="tab active" id="tab-btn-encrypt" data-tab="encrypt" role="tab" aria-selected="true" aria-controls="tab-encrypt" tabindex="0">暗号化 (Encrypt)</button>
+    <button class="tab" id="tab-btn-decrypt" data-tab="decrypt" role="tab" aria-selected="false" aria-controls="tab-decrypt" tabindex="-1">復号 (Decrypt)</button>
+    <button class="tab" id="tab-btn-matrix" data-tab="matrix" role="tab" aria-selected="false" aria-controls="tab-matrix" tabindex="-1">マトリクス (Matrix)</button>
+    <button class="tab" id="tab-btn-history" data-tab="history" role="tab" aria-selected="false" aria-controls="tab-history" tabindex="-1">座学 (Study)</button>
   </nav>
+
+  <noscript>
+    <p class="noscript">このツールはJavaScriptで動きます。ブラウザーのJavaScriptを有効にしてください。</p>
+  </noscript>
 
   <main>
     <!-- Encrypt -->
-    <section id="tab-encrypt" class="panel active" role="tabpanel">
+    <section id="tab-encrypt" class="panel active" role="tabpanel" aria-labelledby="tab-btn-encrypt" tabindex="0">
       <div class="card">
         <h2>暗号化</h2>
         <div class="grid-2">
@@ -51,7 +54,7 @@
               </div>
               <div class="field">
                 <label class="label">キーワード（任意）
-                  <span class="help-icon" title="キーワードを入力すると、その文字が優先的に表の先頭に配置されます。送信者と受信者で同じキーワードを使うことで秘密鍵として機能します。">?</span>
+                  <button type="button" class="help-icon" data-help="キーワードを入力すると、その文字が優先的に表の先頭に配置されます。送信者と受信者で同じキーワードを使うことで秘密鍵として機能します。" aria-label="説明を表示">?</button>
                 </label>
                 <input id="keyword-enc" type="text" placeholder="例: key" />
               </div>
@@ -64,7 +67,7 @@
                 <input id="preserve-spaces-enc" type="checkbox" checked />
                 <span>単語の区切りを維持する</span>
               </label>
-              <span class="help-icon" title="チェックすると、空白は「/」に変換され、改行は維持されます。チェックを外すと、空白や改行は削除されて連続した数字になります。">?</span>
+              <button type="button" class="help-icon" data-help="チェックすると、空白は「/」に変換され、改行は維持されます。チェックを外すと、空白や改行は削除されて連続した数字になります。" aria-label="説明を表示">?</button>
             </div>
 
             <div class="row">
@@ -72,7 +75,7 @@
                 <input id="concat-pairs-enc" type="checkbox" />
                 <span>数字ペアを連結する</span>
               </label>
-              <span class="help-icon" title="チェックすると、数字ペアがスペースなしで連結されます。例：「23 15 31」→「231531」">?</span>
+              <button type="button" class="help-icon" data-help="チェックすると、数字ペアがスペースなしで連結されます。例：「23 15 31」→「231531」" aria-label="説明を表示">?</button>
             </div>
 
             <div class="row">
@@ -80,7 +83,7 @@
                 <input id="preserve-symbols-enc" type="checkbox" />
                 <span>記号・数字をそのまま出力</span>
               </label>
-              <span class="help-icon" title="チェックすると、句読点や数字などの非アルファベット文字がそのまま暗号文に含まれます。チェックを外すと削除されます。">?</span>
+              <button type="button" class="help-icon" data-help="チェックすると、句読点や数字などの非アルファベット文字がそのまま暗号文に含まれます。チェックを外すと削除されます。" aria-label="説明を表示">?</button>
             </div>
 
             <div class="row gap">
@@ -107,7 +110,7 @@
     </section>
 
     <!-- Decrypt -->
-    <section id="tab-decrypt" class="panel" role="tabpanel">
+    <section id="tab-decrypt" class="panel" role="tabpanel" aria-labelledby="tab-btn-decrypt" tabindex="0">
       <div class="card">
         <h2>復号</h2>
         <div class="grid-2">
@@ -128,7 +131,7 @@
               </div>
               <div class="field">
                 <label class="label">キーワード（任意）
-                  <span class="help-icon" title="暗号化時と同じキーワードを使用してください。キーワードが異なると正しく復号できません。">?</span>
+                  <button type="button" class="help-icon" data-help="暗号化時と同じキーワードを使用してください。キーワードが異なると正しく復号できません。" aria-label="説明を表示">?</button>
                 </label>
                 <input id="keyword-dec" type="text" placeholder="例: key" />
               </div>
@@ -162,7 +165,7 @@
     </section>
 
     <!-- Matrix -->
-    <section id="tab-matrix" class="panel" role="tabpanel">
+    <section id="tab-matrix" class="panel" role="tabpanel" aria-labelledby="tab-btn-matrix" tabindex="0">
       <div class="card">
         <h2>マトリクス表示</h2>
 
@@ -176,7 +179,7 @@
           </div>
           <div class="field">
             <label class="label">キーワード（任意）
-              <span class="help-icon" title="キーワードの文字が表の先頭に配置され、残りのアルファベットが続きます。重複する文字は自動的に削除されます。">?</span>
+              <button type="button" class="help-icon" data-help="キーワードの文字が表の先頭に配置され、残りのアルファベットが続きます。重複する文字は自動的に削除されます。" aria-label="説明を表示">?</button>
             </label>
             <input id="keyword-matrix" type="text" placeholder="例: key" />
           </div>
@@ -197,7 +200,7 @@
     </section>
 
     <!-- History/Study -->
-    <section id="tab-history" class="panel" role="tabpanel">
+    <section id="tab-history" class="panel" role="tabpanel" aria-labelledby="tab-btn-history" tabindex="0">
       <div class="card">
         <h2>ポリュビオス暗号について</h2>
 
@@ -262,7 +265,7 @@
 
   <footer>
     <div class="footer">
-      🔗 GitHubリポジトリはこちら（
+      🔗 GitHubリポジトリーはこちら（
       <a href="https://github.com/ipusiron/polybius-cipherlab" target="_blank" rel="noopener noreferrer">
         ipusiron/polybius-cipherlab
       </a> ）

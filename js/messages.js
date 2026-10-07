@@ -25,6 +25,9 @@
     'keyword.dropped': 'キーワードで使えない文字（{chars}）は除きました。',
     'keyword.merged': 'キーワードの{chars}は{to}として扱いました。',
 
+    'theme.toLight': 'ライトモードに切り替える',
+    'theme.toDark': 'ダークモードに切り替える',
+
     'toast.copied': 'コピーしました',
     'toast.copyFailed': 'コピーできませんでした',
     'toast.synced': '暗号文と設定を同期しました',

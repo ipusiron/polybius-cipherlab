@@ -331,6 +331,28 @@
     $('keyword-matrix').addEventListener('input', update);
   }
 
+  // ヘルプの「?」。hover だけでは触る画面で読めないので、押しても出るようにする
+  function setupHelp() {
+    const closeAll = () => document.querySelectorAll('.help-icon.open').forEach((x) => x.classList.remove('open'));
+    document.querySelectorAll('.help-icon').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const on = btn.classList.contains('open');
+        closeAll();
+        if (!on) btn.classList.add('open');
+      });
+    });
+    document.addEventListener('click', (ev) => {
+      if (!ev.target.closest || !ev.target.closest('.help-icon')) closeAll();
+    });
+    // Esc で閉じる（WCAG 2.2 の 1.4.13）。フォーカスが残っていると :focus-visible で出たままになるので外す
+    document.addEventListener('keydown', (ev) => {
+      if (ev.key !== 'Escape') return;
+      closeAll();
+      const active = document.activeElement;
+      if (active && active.classList && active.classList.contains('help-icon')) active.blur();
+    });
+  }
+
   // Theme management
   const THEME_KEY = 'theme';
 
@@ -351,11 +373,11 @@
     if (theme === 'light') {
       document.body.setAttribute('data-theme', 'light');
       if (icon) icon.textContent = '🌙';
-      if (btn) btn.setAttribute('aria-label', 'ダークモードに切り替える');
+      if (btn) btn.setAttribute('aria-label', t('theme.toDark'));
     } else {
       document.body.removeAttribute('data-theme');
       if (icon) icon.textContent = '☀️';
-      if (btn) btn.setAttribute('aria-label', 'ライトモードに切り替える');
+      if (btn) btn.setAttribute('aria-label', t('theme.toLight'));
     }
     try {
       localStorage.setItem(THEME_KEY, theme);
@@ -378,6 +400,7 @@
     setupEncrypt();
     setupDecrypt();
     setupMatrix();
+    setupHelp();
     for (const tab of Object.keys(PANELS)) renderPreview(tab);
   }
 
