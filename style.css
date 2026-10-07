@@ -5,9 +5,11 @@
   --text:#e8eef4;
   --muted:#99a6b5;
   --primary:#3aa0ff;
+  --on-primary:#0b0d10;
   --accent:#66d17a;
   --danger:#ff6b6b;
   --border:#25303a;
+  --focus:#9fd0ff;
   --shadow: 0 6px 20px rgba(0,0,0,.35);
   --radius:16px;
 }
@@ -19,16 +21,18 @@
   --text:#1e293b;
   --muted:#64748b;
   --primary:#2563eb;
-  --accent:#16a34a;
+  --on-primary:#ffffff;
+  --accent:#15803d;
   --danger:#dc2626;
   --border:#e2e8f0;
+  --focus:#1d4ed8;
   --shadow: 0 6px 20px rgba(0,0,0,.08);
 }
 
 *{box-sizing:border-box}
 html{height:100%}
 body{
-  min-height:100vh;
+  min-height:100dvh;
   margin:0;
   padding-bottom:40px;
   background: var(--bg);
@@ -49,14 +53,16 @@ body:not([data-theme="light"]){
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:12px;
   max-width:1100px;
   margin:0 auto;
 }
 .header-content > div{
   text-align:center;
   flex:1;
+  min-width:0;
 }
-.site-header h1{margin:0;font-size:28px;letter-spacing:.3px}
+.site-header h1{margin:0;font-size:clamp(20px, 4.5vw, 28px);letter-spacing:.3px;overflow-wrap:anywhere}
 .subtitle{margin:.5rem 0 0;color:var(--muted);font-size:14px}
 
 .theme-toggle{
@@ -64,6 +70,8 @@ body:not([data-theme="light"]){
   border:1px solid var(--border);
   border-radius:12px;
   padding:8px;
+  min-width:44px;
+  min-height:44px;
   cursor:pointer;
   color:var(--text);
   transition:all .2s;
@@ -92,7 +100,10 @@ body:not([data-theme="light"]){
   background:var(--card);
   color:var(--text);
   padding:10px 14px;
+  min-height:44px;
   border-radius:12px;
+  font-size:15px;
+  font-family:inherit;
   cursor:pointer;
   box-shadow:var(--shadow);
   transition:all .2s;
@@ -102,9 +113,9 @@ body:not([data-theme="light"]){
 }
 .tab.active{
   border-color:var(--primary);
-  outline:1px solid color-mix(in oklab, var(--primary), transparent 70%);
   background:var(--primary);
-  color:white;
+  color:var(--on-primary);
+  font-weight:600;
 }
 
 main{
@@ -141,9 +152,17 @@ textarea, input, select{
   border:1px solid var(--border);
   border-radius:12px;
   padding:10px 12px;
-  outline:none;
+  font-size:16px;
+  font-family:inherit;
 }
 textarea{resize:vertical}
+
+/* キーボードで操作したときに、いまどこにいるかが見えるようにする */
+:focus-visible{
+  outline:3px solid var(--focus);
+  outline-offset:2px;
+}
+.matrix .cell:focus-visible{outline-offset:-3px}
 
 .row{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:10px}
 .row:last-child{margin-bottom:0}
@@ -175,6 +194,9 @@ textarea{resize:vertical}
   border:1px solid var(--border);
   border-radius:12px;
   padding:10px 14px;
+  min-height:44px;
+  font-size:15px;
+  font-family:inherit;
   cursor:pointer;
   transition:all .2s;
 }
@@ -185,7 +207,8 @@ textarea{resize:vertical}
 .btn.primary{
   background:var(--primary);
   border-color:var(--primary);
-  color:white;
+  color:var(--on-primary);
+  font-weight:600;
 }
 .btn.primary:hover{
   background:color-mix(in oklab, var(--primary), black 10%);
@@ -210,14 +233,20 @@ textarea{resize:vertical}
   padding:6px 10px;
 }
 .mapping-list li .pair{color:var(--accent);font-weight:600}
+.mapping-list li[data-kind="dropped"] .pair,
+.mapping-list li[data-kind="out-of-range"] .pair{color:var(--danger)}
+.mapping-list li[data-kind="leftover"] .pair,
+.mapping-list li[data-kind="symbol"] .pair{color:var(--muted)}
+.mapping-list li.more{list-style:none;color:var(--muted);font-size:13px;background:none;border:none;padding:6px 0}
 .mapping-list li.anim{
   outline:1px solid color-mix(in oklab, var(--accent), transparent 60%);
   background:color-mix(in oklab, var(--accent), transparent 90%);
 }
 
 .matrix-wrapper{
-  margin-top:14px;
-  display:inline-block;
+  margin:14px auto 0;
+  width:100%;
+  max-width:420px;
   padding:8px;
   background:var(--card);
   border:1px solid var(--border);
@@ -226,27 +255,27 @@ textarea{resize:vertical}
 }
 
 .matrix-preview{
-  margin:8px 0 -20px;
-  display:flex;
-  justify-content:center;
+  margin:8px 0 10px;
 }
 .matrix-preview .matrix-wrapper{
-  margin:0;
-  transform:scale(0.85);
-  transform-origin:top center;
+  margin:0 auto;
+  max-width:300px;
 }
 
 .matrix{
   display:grid;
-  gap:8px;
-  justify-content:center;
+  gap:6px;
 }
 .matrix .cell{
-  width:54px; height:54px;
+  aspect-ratio:1;
+  min-width:0;
+  padding:0;
   display:flex; align-items:center; justify-content:center;
   background:var(--panel);
   border:1px solid var(--border);
-  border-radius:12px;
+  border-radius:10px;
+  font-size:clamp(13px, 3.4vw, 18px);
+  font-family:inherit;
   font-weight:600;
   color:var(--text);
 }
@@ -291,8 +320,17 @@ footer{
   border-radius:12px;
   padding:8px 12px;
 }
-.footer a{color:var(--primary); text-decoration:none}
-.privacy{margin:.6rem 0 0; font-size:13px}
+.footer a{color:var(--primary); text-decoration:underline}
+
+.noscript{
+  max-width:1100px;
+  margin:10px auto;
+  padding:12px 14px;
+  background:var(--card);
+  border:1px solid var(--danger);
+  border-radius:12px;
+  color:var(--text);
+}
 
 .info-box{
   margin-top:20px;
@@ -347,35 +385,51 @@ footer{
 #tab-history strong{
   color:var(--text);
 }
+#tab-history .code-block{
+  color:var(--text);
+  font-size:15px;
+}
+#tab-history .source{
+  border-left:3px solid var(--border);
+  padding-left:12px;
+  font-size:14px;
+}
+#tab-history .source-list{
+  font-size:13px;
+}
 
 .help-icon{
-  display:inline-block;
-  width:18px;
-  height:18px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px;
+  height:24px;
   margin-left:4px;
+  padding:0;
+  border:none;
   background:var(--primary);
-  color:var(--card);
+  color:var(--on-primary);
   border-radius:50%;
-  font-size:12px;
+  font-size:14px;
+  font-family:inherit;
   font-weight:bold;
-  text-align:center;
-  line-height:18px;
+  line-height:1;
   cursor:help;
   position:relative;
   transition:background .2s;
   flex-shrink:0;
 }
 .help-icon:hover{
-  background:var(--accent);
+  background:color-mix(in oklab, var(--primary), var(--text) 25%);
 }
 .help-icon::after{
-  content:attr(title);
+  content:attr(data-help);
   position:absolute;
   bottom:calc(100% + 8px);
   left:50%;
   transform:translateX(-50%);
-  min-width:200px;
-  max-width:280px;
+  min-width:min(200px, 70vw);
+  max-width:min(280px, 80vw);
   padding:8px 10px;
   background:var(--card);
   color:var(--text);
@@ -391,9 +445,26 @@ footer{
   z-index:100;
   box-shadow:var(--shadow);
 }
-.help-icon:hover::after{
+.help-icon:hover::after,
+.help-icon:focus-visible::after,
+.help-icon.open::after{
   opacity:1;
   visibility:visible;
+}
+
+/* 狭い画面では、吹き出しが画面からはみ出すので下端に固定して出す */
+@media (max-width:520px){
+  .help-icon::after{
+    position:fixed;
+    left:12px;
+    right:12px;
+    bottom:12px;
+    top:auto;
+    transform:none;
+    min-width:0;
+    max-width:none;
+    font-size:14px;
+  }
 }
 
 .output-header{
@@ -408,10 +479,12 @@ footer{
   color:var(--text);
   border:1px solid var(--border);
   border-radius:8px;
-  padding:4px 8px;
+  padding:6px 10px;
+  min-height:32px;
   cursor:pointer;
-  font-size:16px;
-  line-height:1;
+  font-size:15px;
+  font-family:inherit;
+  line-height:1.2;
   transition:all .2s;
 }
 .btn-copy-small:hover{
@@ -421,4 +494,13 @@ footer{
 }
 .btn-copy-small:active{
   transform:translateY(1px);
+}
+
+/* 動きを減らす設定のときは、色や形の変化を止める */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    transition-duration:.01ms !important;
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+  }
 }
