@@ -63,7 +63,7 @@ test('README と座学タブに書いた変換の例が、コードの出力と�
 
 test('座学タブの変換の例（1文字ずつ）がコードの出力と一致する', () => {
   const square = C.buildSquare({ mode: '5x5', keyword: '' });
-  const items = [...html.matchAll(/<li>'(\w)' → (\d)行(\d)列 → "(\d\d)"<\/li>/g)];
+  const items = [...html.matchAll(/<li[^>]*>'(\w)' → (\d)行(\d)列 → "(\d\d)"<\/li>/g)];
   assert.equal(items.length, 5);
   for (const [, ch, row, col, pair] of items) {
     assert.equal(square.charToPair[ch.toUpperCase()], pair, ch);
@@ -191,4 +191,59 @@ test('README に過去の版との違いを書かない', () => {
   for (const re of [/改修前/, /以前は/, /初期の実装/, /旧バージョン/, /誤りだった/]) {
     assert.doesNotMatch(readme, re);
   }
+});
+
+// ---- 英語版のREADME（要約にせず、同じ節をそろえる）
+const readmeEn = read('README.en.md');
+
+test('日本語版と英語版で、見出しの数・順・階層がそろっている', () => {
+  const levels = (text) => [...text.matchAll(/^(#{1,3}) /gm)].map((m) => m[1].length);
+  const ja = levels(readme);
+  const en = levels(readmeEn);
+  assert.ok(ja.length >= 25, `見出しが ${ja.length} 個しかない`);
+  assert.deepEqual(en, ja, `見出しの数か階層が違う（ja ${ja.length} / en ${en.length}）`);
+});
+
+test('英語版に日本語の本文が残っていない', () => {
+  const body = readmeEn
+    .split('\n')
+    .filter((line) => !line.includes('README.md') && !line.includes('日本語'))
+    .join('\n');
+  const hits = [...body.matchAll(/[぀-ヿ一-鿿]+/g)].map((m) => m[0]);
+  assert.deepEqual(hits, [], `日本語が残っている: ${hits.slice(0, 5).join(' / ')}`);
+});
+
+test('両方のREADMEが互いにリンクしている', () => {
+  assert.match(readme, /^\[English\]\(README\.en\.md\) · 日本語$/m);
+  assert.match(readmeEn, /^English · \[日本語\]\(README\.md\)$/m);
+  // YAML メタデータは日本語版だけに置く（hackinglab.online が読むのは README.md）
+  assert.doesNotMatch(readmeEn, /^id: day067$/m);
+});
+
+test('英語版の方陣と例が、コードの出力と一致する', () => {
+  const block = readmeEn.match(/```\n  1 2 3 4 5\n([\s\S]*?)```/);
+  assert.ok(block, 'キーワード key の方陣が英語版にない');
+  const rows = block[1].trim().split('\n').map((line) => line.replace(/^\d /, '').split(' ').join(''));
+  const square = C.buildSquare({ mode: '5x5', keyword: 'key' });
+  assert.deepEqual(rows, square.rows.map((r) => r.join('').toLowerCase()));
+  const sym = C.encrypt(C.buildSquare({ mode: '5x5' }), 'a1b', { preserveSymbols: true });
+  assert.ok(readmeEn.includes('`a1b` → `11 1 12` → `a1b`'));
+  assert.equal(sym.cipher, '11 1 12');
+});
+
+test('英語版の画像がすべて実在する', () => {
+  const imgs = [...readmeEn.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].map((m) => m[1]);
+  const local = imgs.filter((u) => !u.startsWith('http'));
+  assert.ok(local.length >= 7, `画像の参照が ${local.length} 件しかない`);
+  for (const rel of local) {
+    assert.ok(rel.startsWith('assets/en/'), `英語版は英語の画面を使う: ${rel}`);
+    assert.ok(fs.existsSync(new URL(rel, ROOT)), `${rel} がない`);
+  }
+});
+
+test('英語版のディレクトリー構造にも全ファイルが載っている', () => {
+  const tree = readmeEn.match(/## 📁 Directory structure\n\n```\n([\s\S]*?)```/);
+  assert.ok(tree, '英語版にディレクトリー構造がない');
+  const lines = tree[1].trim().split('\n');
+  for (const line of lines.slice(1)) assert.match(line, /# .+$/, `説明のない行: ${line}`);
 });

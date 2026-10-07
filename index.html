@@ -14,51 +14,54 @@
   <header class="site-header">
     <div class="header-content">
       <div>
-        <h1>Polybius CipherLab - ポリュビオス暗号の可視化ツール</h1>
-        <p class="subtitle">ポリュビオスのチェッカー盤を用いて「アルファベット1文字⇔数字ペア」の変換を実現します</p>
+        <h1 data-i18n="ui.title">Polybius CipherLab - ポリュビオス暗号の可視化ツール</h1>
+        <p class="subtitle" data-i18n="ui.subtitle">ポリュビオスのチェッカー盤を用いて「アルファベット1文字⇔数字ペア」の変換を実現します</p>
       </div>
-      <button id="theme-toggle" class="theme-toggle" aria-label="ライトモードに切り替える">
-        <span class="theme-icon">🌙</span>
-      </button>
+      <div class="header-buttons">
+        <button id="lang-toggle" class="lang-toggle" data-i18n="ui.langButton" data-i18n-attr="aria-label:ui.langLabel">English</button>
+        <button id="theme-toggle" class="theme-toggle" data-i18n-attr="aria-label:theme.toLight">
+          <span class="theme-icon">🌙</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <nav class="tabs" role="tablist" aria-label="ツールの画面">
-    <button class="tab active" id="tab-btn-encrypt" data-tab="encrypt" role="tab" aria-selected="true" aria-controls="tab-encrypt" tabindex="0">暗号化 (Encrypt)</button>
-    <button class="tab" id="tab-btn-decrypt" data-tab="decrypt" role="tab" aria-selected="false" aria-controls="tab-decrypt" tabindex="-1">復号 (Decrypt)</button>
-    <button class="tab" id="tab-btn-matrix" data-tab="matrix" role="tab" aria-selected="false" aria-controls="tab-matrix" tabindex="-1">マトリクス (Matrix)</button>
-    <button class="tab" id="tab-btn-compare" data-tab="compare" role="tab" aria-selected="false" aria-controls="tab-compare" tabindex="-1">くらべる (Compare)</button>
-    <button class="tab" id="tab-btn-signal" data-tab="signal" role="tab" aria-selected="false" aria-controls="tab-signal" tabindex="-1">松明信号 (Fire Signal)</button>
-    <button class="tab" id="tab-btn-history" data-tab="history" role="tab" aria-selected="false" aria-controls="tab-history" tabindex="-1">座学 (Study)</button>
+  <nav class="tabs" role="tablist" data-i18n-attr="aria-label:ui.tablist">
+    <button class="tab active" id="tab-btn-encrypt" data-tab="encrypt" role="tab" aria-selected="true" aria-controls="tab-encrypt" tabindex="0" data-i18n="tab.encrypt">暗号化 (Encrypt)</button>
+    <button class="tab" id="tab-btn-decrypt" data-tab="decrypt" role="tab" aria-selected="false" aria-controls="tab-decrypt" tabindex="-1" data-i18n="tab.decrypt">復号 (Decrypt)</button>
+    <button class="tab" id="tab-btn-matrix" data-tab="matrix" role="tab" aria-selected="false" aria-controls="tab-matrix" tabindex="-1" data-i18n="tab.matrix">マトリクス (Matrix)</button>
+    <button class="tab" id="tab-btn-compare" data-tab="compare" role="tab" aria-selected="false" aria-controls="tab-compare" tabindex="-1" data-i18n="tab.compare">くらべる (Compare)</button>
+    <button class="tab" id="tab-btn-signal" data-tab="signal" role="tab" aria-selected="false" aria-controls="tab-signal" tabindex="-1" data-i18n="tab.signal">松明信号 (Fire Signal)</button>
+    <button class="tab" id="tab-btn-history" data-tab="history" role="tab" aria-selected="false" aria-controls="tab-history" tabindex="-1" data-i18n="tab.history">座学 (Study)</button>
   </nav>
 
   <noscript>
-    <p class="noscript">このツールはJavaScriptで動きます。ブラウザーのJavaScriptを有効にしてください。</p>
+    <p class="noscript">このツールはJavaScriptで動きます。ブラウザーのJavaScriptを有効にしてください。<br />This tool runs on JavaScript. Please enable JavaScript in your browser.</p>
   </noscript>
 
   <main>
     <!-- Encrypt -->
     <section id="tab-encrypt" class="panel active" role="tabpanel" aria-labelledby="tab-btn-encrypt" tabindex="0">
       <div class="card">
-        <h2>暗号化</h2>
+        <h2 data-i18n="enc.title">暗号化</h2>
         <div class="grid-2">
           <div>
-            <label class="label">平文</label>
-            <textarea id="enc-input" rows="7" placeholder="例: hello world"></textarea>
+            <label class="label" data-i18n="enc.plain">平文</label>
+            <textarea id="enc-input" rows="7" placeholder="例: hello world" data-i18n-attr="placeholder:enc.plainPlaceholder"></textarea>
 
             <div class="row">
               <div class="field">
-                <label class="label">モード</label>
+                <label class="label" data-i18n="enc.mode">モード</label>
                 <select id="mode-enc">
-                  <option value="5x5">5×5（'i'と'j'を統合）</option>
-                  <option value="6x6">6×6（「a–z」＋「0–9」）</option>
+                  <option value="5x5" data-i18n="mode.5x5">5×5（'i'と'j'を統合）</option>
+                  <option value="6x6" data-i18n="mode.6x6">6×6（「a–z」＋「0–9」）</option>
                 </select>
               </div>
               <div class="field">
-                <label class="label">キーワード（任意）
-                  <button type="button" class="help-icon" data-help="キーワードを入力すると、その文字が優先的に表の先頭に配置されます。送信者と受信者で同じキーワードを使うことで秘密鍵として機能します。" aria-label="説明を表示">?</button>
+                <label class="label"><span data-i18n="ui.keyword">キーワード（任意）</span>
+                  <button type="button" class="help-icon" data-help="キーワードを入力すると、その文字が優先的に表の先頭に配置されます。送信者と受信者で同じキーワードを使うことで秘密鍵として機能します。" aria-label="説明を表示" data-i18n-attr="data-help:enc.help.keyword;aria-label:ui.helpLabel">?</button>
                 </label>
-                <input id="keyword-enc" type="text" placeholder="例: key" />
+                <input id="keyword-enc" type="text" placeholder="例: key" data-i18n-attr="placeholder:ui.keywordPlaceholder" />
               </div>
             </div>
 
@@ -69,43 +72,43 @@
             <div class="row">
               <label class="checkbox">
                 <input id="preserve-spaces-enc" type="checkbox" checked />
-                <span>単語の区切りを維持する</span>
+                <span data-i18n="enc.opt.spaces">単語の区切りを維持する</span>
               </label>
-              <button type="button" class="help-icon" data-help="チェックすると、空白は「/」に変換され、改行は維持されます。チェックを外すと、空白や改行は削除されて連続した数字になります。" aria-label="説明を表示">?</button>
+              <button type="button" class="help-icon" data-help="チェックすると、空白は「/」に変換され、改行は維持されます。チェックを外すと、空白や改行は削除されて連続した数字になります。" aria-label="説明を表示" data-i18n-attr="data-help:enc.help.spaces;aria-label:ui.helpLabel">?</button>
             </div>
 
             <div class="row">
               <label class="checkbox">
                 <input id="concat-pairs-enc" type="checkbox" />
-                <span>数字ペアを連結する</span>
+                <span data-i18n="enc.opt.concat">数字ペアを連結する</span>
               </label>
-              <button type="button" class="help-icon" data-help="チェックすると、数字ペアがスペースなしで連結されます。例：「23 15 31」→「231531」" aria-label="説明を表示">?</button>
+              <button type="button" class="help-icon" data-help="チェックすると、数字ペアがスペースなしで連結されます。例：「23 15 31」→「231531」" aria-label="説明を表示" data-i18n-attr="data-help:enc.help.concat;aria-label:ui.helpLabel">?</button>
             </div>
 
             <div class="row">
               <label class="checkbox">
                 <input id="preserve-symbols-enc" type="checkbox" />
-                <span>記号・数字をそのまま出力</span>
+                <span data-i18n="enc.opt.symbols">記号・数字をそのまま出力</span>
               </label>
-              <button type="button" class="help-icon" data-help="チェックすると、句読点や数字などの非アルファベット文字がそのまま暗号文に含まれます。チェックを外すと削除されます。" aria-label="説明を表示">?</button>
+              <button type="button" class="help-icon" data-help="チェックすると、句読点や数字などの非アルファベット文字がそのまま暗号文に含まれます。チェックを外すと削除されます。" aria-label="説明を表示" data-i18n-attr="data-help:enc.help.symbols;aria-label:ui.helpLabel">?</button>
             </div>
 
             <div class="row gap">
-              <button id="btn-enc" class="btn primary">暗号化する</button>
-              <button id="btn-enc-clear" class="btn">クリア</button>
+              <button id="btn-enc" class="btn primary" data-i18n="enc.run">暗号化する</button>
+              <button id="btn-enc-clear" class="btn" data-i18n="ui.clear">クリア</button>
             </div>
           </div>
 
           <div>
             <div class="output-header">
-              <label class="label">暗号文（数字ペア）</label>
-              <button id="btn-enc-copy" class="btn-copy-small" title="クリップボードにコピー">📋 コピー</button>
+              <label class="label" data-i18n="enc.output">暗号文（数字ペア）</label>
+              <button id="btn-enc-copy" class="btn-copy-small" title="クリップボードにコピー" data-i18n="ui.copy" data-i18n-attr="title:ui.copyTitle">📋 コピー</button>
             </div>
-            <textarea id="enc-output" rows="7" readonly placeholder="例: 23 15 31 31 34 / 52 34 42 31 14"></textarea>
+            <textarea id="enc-output" rows="7" readonly placeholder="例: 23 15 31 31 34 / 52 34 42 31 14" data-i18n-attr="placeholder:enc.outputPlaceholder"></textarea>
             <span id="enc-status" class="status" aria-live="polite"></span>
 
             <details class="mt">
-              <summary>対応表（アニメ表示）</summary>
+              <summary data-i18n="ui.mapping">対応表（アニメ表示）</summary>
               <ol id="enc-map" class="mapping-list"></ol>
             </details>
           </div>
@@ -116,28 +119,28 @@
     <!-- Decrypt -->
     <section id="tab-decrypt" class="panel" role="tabpanel" aria-labelledby="tab-btn-decrypt" tabindex="0">
       <div class="card">
-        <h2>復号</h2>
+        <h2 data-i18n="dec.title">復号</h2>
         <div class="grid-2">
           <div>
             <div class="output-header">
-              <label class="label">暗号文（数字ペア）</label>
-              <button id="btn-sync-cipher" class="btn-copy-small" title="暗号化タブの出力を取り込む">🔄 同期</button>
+              <label class="label" data-i18n="dec.input">暗号文（数字ペア）</label>
+              <button id="btn-sync-cipher" class="btn-copy-small" title="暗号化タブの出力を取り込む" data-i18n="dec.sync" data-i18n-attr="title:dec.syncTitle">🔄 同期</button>
             </div>
-            <textarea id="dec-input" rows="7" placeholder="例: 23 15 31 31 34 / 52 34 42 31 14"></textarea>
+            <textarea id="dec-input" rows="7" placeholder="例: 23 15 31 31 34 / 52 34 42 31 14" data-i18n-attr="placeholder:dec.inputPlaceholder"></textarea>
 
             <div class="row">
               <div class="field">
-                <label class="label">モード</label>
+                <label class="label" data-i18n="enc.mode">モード</label>
                 <select id="mode-dec">
-                  <option value="5x5">5×5（'i'と'j'を統合）</option>
-                  <option value="6x6">6×6（「a–z」＋「0–9」）</option>
+                  <option value="5x5" data-i18n="mode.5x5">5×5（'i'と'j'を統合）</option>
+                  <option value="6x6" data-i18n="mode.6x6">6×6（「a–z」＋「0–9」）</option>
                 </select>
               </div>
               <div class="field">
-                <label class="label">キーワード（任意）
-                  <button type="button" class="help-icon" data-help="暗号化時と同じキーワードを使用してください。キーワードが異なると正しく復号できません。" aria-label="説明を表示">?</button>
+                <label class="label"><span data-i18n="ui.keyword">キーワード（任意）</span>
+                  <button type="button" class="help-icon" data-help="暗号化時と同じキーワードを使用してください。キーワードが異なると正しく復号できません。" aria-label="説明を表示" data-i18n-attr="data-help:dec.help.keyword;aria-label:ui.helpLabel">?</button>
                 </label>
-                <input id="keyword-dec" type="text" placeholder="例: key" />
+                <input id="keyword-dec" type="text" placeholder="例: key" data-i18n-attr="placeholder:ui.keywordPlaceholder" />
               </div>
             </div>
 
@@ -145,24 +148,24 @@
 
             <div id="matrix-container-dec" class="matrix-preview"></div>
 
-            <div class="hint">数字は連結でもスペース区切りでもOKです（例：2315313134）</div>
+            <div class="hint" data-i18n="dec.hint">数字は連結でもスペース区切りでも読めます（例：2315313134）</div>
 
             <div class="row gap">
-              <button id="btn-dec" class="btn primary">復号する</button>
-              <button id="btn-dec-clear" class="btn">クリア</button>
+              <button id="btn-dec" class="btn primary" data-i18n="dec.run">復号する</button>
+              <button id="btn-dec-clear" class="btn" data-i18n="ui.clear">クリア</button>
             </div>
           </div>
 
           <div>
             <div class="output-header">
-              <label class="label">復号結果</label>
-              <button id="btn-dec-copy" class="btn-copy-small" title="クリップボードにコピー">📋 コピー</button>
+              <label class="label" data-i18n="dec.output">復号結果</label>
+              <button id="btn-dec-copy" class="btn-copy-small" title="クリップボードにコピー" data-i18n="ui.copy" data-i18n-attr="title:ui.copyTitle">📋 コピー</button>
             </div>
-            <textarea id="dec-output" rows="7" readonly placeholder="例: hello world"></textarea>
+            <textarea id="dec-output" rows="7" readonly placeholder="例: hello world" data-i18n-attr="placeholder:dec.outputPlaceholder"></textarea>
             <span id="dec-status" class="status" aria-live="polite"></span>
 
             <details class="mt">
-              <summary>対応表（アニメ表示）</summary>
+              <summary data-i18n="ui.mapping">対応表（アニメ表示）</summary>
               <ol id="dec-map" class="mapping-list"></ol>
             </details>
           </div>
@@ -173,21 +176,21 @@
     <!-- Matrix -->
     <section id="tab-matrix" class="panel" role="tabpanel" aria-labelledby="tab-btn-matrix" tabindex="0">
       <div class="card">
-        <h2>マトリクス表示</h2>
+        <h2 data-i18n="mx.title">マトリクス表示</h2>
 
         <div class="row">
           <div class="field">
-            <label class="label">モード</label>
+            <label class="label" data-i18n="enc.mode">モード</label>
             <select id="mode-matrix">
-              <option value="5x5">5×5（'i'と'j'を統合）</option>
-              <option value="6x6">6×6（「a–z」＋「0–9」）</option>
+              <option value="5x5" data-i18n="mode.5x5">5×5（'i'と'j'を統合）</option>
+              <option value="6x6" data-i18n="mode.6x6">6×6（「a–z」＋「0–9」）</option>
             </select>
           </div>
           <div class="field">
-            <label class="label">キーワード（任意）
-              <button type="button" class="help-icon" data-help="キーワードの文字が表の先頭に配置され、残りのアルファベットが続きます。重複する文字は自動的に削除されます。" aria-label="説明を表示">?</button>
+            <label class="label"><span data-i18n="ui.keyword">キーワード（任意）</span>
+              <button type="button" class="help-icon" data-help="キーワードの文字が表の先頭に配置され、残りのアルファベットが続きます。重複する文字は自動的に削除されます。" aria-label="説明を表示" data-i18n-attr="data-help:mx.help.keyword;aria-label:ui.helpLabel">?</button>
             </label>
-            <input id="keyword-matrix" type="text" placeholder="例: key" />
+            <input id="keyword-matrix" type="text" placeholder="例: key" data-i18n-attr="placeholder:ui.keywordPlaceholder" />
           </div>
         </div>
 
@@ -196,12 +199,12 @@
         <div id="matrix-container" class="matrix-wrapper"></div>
 
         <div class="info-box">
-          <h3>💡 使い方</h3>
+          <h3 data-i18n="mx.usage">💡 使い方</h3>
           <ul>
-            <li>キーワードを入力すると、その文字を優先してマトリクスを構成します</li>
-            <li>セルをクリックすると、同じ行・列がハイライトされます</li>
-            <li>5×5モードでは I と J が同じセルを共有します</li>
-            <li>6×6モードではアルファベットと数字（0-9）を扱えます</li>
+            <li data-i18n="mx.usage1">キーワードを入力すると、その文字を優先してマトリクスを構成します</li>
+            <li data-i18n="mx.usage2">セルを押すと、同じ行・列がハイライトされます（もう一度押すと消えます）</li>
+            <li data-i18n="mx.usage3">5×5モードでは I と J が同じセルを共有します</li>
+            <li data-i18n="mx.usage4">6×6モードではアルファベットと数字（0-9）を扱えます</li>
           </ul>
         </div>
       </div>
@@ -210,31 +213,31 @@
     <!-- Compare -->
     <section id="tab-compare" class="panel" role="tabpanel" aria-labelledby="tab-btn-compare" tabindex="0">
       <div class="card">
-        <h2>流儀をくらべる</h2>
-        <p class="hint">
+        <h2 data-i18n="cmp.title">流儀をくらべる</h2>
+        <p class="hint" data-i18n="cmp.note">
           ポリュビオス暗号は、ツールによって作り方が違います。同じ平文と同じキーワードでも結果が変わることを、ここで確かめられます。
         </p>
 
         <div class="row">
           <div class="field grow">
-            <label class="label" for="cmp-text">平文</label>
+            <label class="label" for="cmp-text" data-i18n="cmp.text">平文</label>
             <input id="cmp-text" type="text" value="hello world" />
           </div>
           <div class="field">
-            <label class="label" for="cmp-keyword">キーワード（任意）</label>
-            <input id="cmp-keyword" type="text" placeholder="例: key" />
+            <label class="label" for="cmp-keyword" data-i18n="ui.keyword">キーワード（任意）</label>
+            <input id="cmp-keyword" type="text" placeholder="例: key" data-i18n-attr="placeholder:ui.keywordPlaceholder" />
           </div>
         </div>
 
-        <h3>25マスに収める方法</h3>
-        <p>
+        <h3 data-i18n="cmp.mergeTitle">25マスに収める方法</h3>
+        <p data-i18n="cmp.mergeNote">
           5×5の盤面は25マスしかないので、ラテン文字26文字のうち1つをほかと同じマスに入れるか、外すことになります。
           どれを選ぶかはツールによって違います。
         </p>
         <div id="cmp-merge" class="cmp-list"></div>
 
-        <h3>キーワードのあとの並べ方</h3>
-        <p>
+        <h3 data-i18n="cmp.fillTitle">キーワードのあとの並べ方</h3>
+        <p data-i18n="cmp.fillNote">
           キーワードのあとに残りの文字をどう並べるかも、流儀が分かれます。
           調べた範囲では、これを選べるツールは1つだけでした。
         </p>
@@ -245,33 +248,33 @@
     <!-- Fire signal -->
     <section id="tab-signal" class="panel" role="tabpanel" aria-labelledby="tab-btn-signal" tabindex="0">
       <div class="card">
-        <h2>原典の松明信号</h2>
-        <p class="hint">
+        <h2 data-i18n="sig.title">原典の松明信号</h2>
+        <p class="hint" data-i18n="sig.note">
           いま使われる5×5の方陣は後世の形です。ポリュビオスが『歴史』に記した方法は、5枚の板と松明を使う通信でした。
           ここでは、その方法をそのまま再現します。
         </p>
 
-        <h3>5枚の板</h3>
-        <p>
+        <h3 data-i18n="sig.boards">5枚の板</h3>
+        <p data-i18n="sig.boardsNote">
           ギリシャ語の24文字を5つの群に分け、同じ板を送信側と受信側が持ちます。最後の群だけ1文字少なくなります。
           文字を選ぶと、立てる松明の本数が決まります。
         </p>
         <div id="sig-groups" class="sig-groups"></div>
 
-        <h3>信号</h3>
-        <p>
+        <h3 data-i18n="sig.signalTitle">信号</h3>
+        <p data-i18n="sig.signalNote">
           長さ10フィート・人の高さの衝立で左右を仕切り、左の空間に「何枚目の板か」、右の空間に「その板の何番目の文字か」の数だけ松明を立てます。
           受信側は2本の筒を持つ照準器で、左右を別々に数えます。
         </p>
         <div id="sig-figure" class="sig-figure"></div>
         <p id="sig-note" class="sig-note" aria-live="polite"></p>
 
-        <h3>原典の例</h3>
+        <h3 data-i18n="sig.examples">原典の例</h3>
         <ul>
-          <li>κ は第2群の5番目である。左に2本、右に5本を立てる</li>
-          <li>ρ は第4群の2番目である。左に4本、右に2本を立てる</li>
+          <li data-i18n="sig.ex1">κ は第2群の5番目である。左に2本、右に5本を立てる</li>
+          <li data-i18n="sig.ex2">ρ は第4群の2番目である。左に4本、右に2本を立てる</li>
         </ul>
-        <p class="source">
+        <p class="source" data-i18n="sig.source">
           出典: Polybius『歴史』第10巻45節8〜12、46節1〜3。
           この方法を考えたのはクレオクセノスとデモクレイトスで、ポリュビオスは仕上げたと書いています（第10巻45節6）。
         </p>
@@ -281,38 +284,38 @@
     <!-- History/Study -->
     <section id="tab-history" class="panel" role="tabpanel" aria-labelledby="tab-btn-history" tabindex="0">
       <div class="card">
-        <h2>ポリュビオス暗号について</h2>
+        <h2 data-i18n="study.title">ポリュビオス暗号について</h2>
 
-        <h3>🏛️ 原典の記述</h3>
-        <p>
+        <h3 data-i18n="study.h.origin">🏛️ 原典の記述</h3>
+        <p data-i18n="study.origin.p1">
           ポリュビオス（Polybius）は古代ギリシャの歴史家です。紀元前200年ごろに生まれ、
           118年ごろに亡くなったとされます（資料によって幅があり、紀元前208年ごろの生まれで82歳で没したとするものもあります）。
           ローマへ人質として送られたのち、『歴史（Histories）』全40巻を著しました。
         </p>
-        <p>
+        <p data-i18n="study.origin.p2">
           この表のもとになった方法は、その『歴史』第10巻43〜47節に出てきます。見出しは「烽火通信（Fire-Signalling）」であり、
           秘密を守るための暗号ではなく、<strong>あらかじめ決めておけない内容を遠くへ送るための信号</strong>として書かれています。
         </p>
-        <p class="source">
+        <p class="source" data-i18n="study.origin.p3">
           考案者についても原典ははっきり書いています。「クレオクセノスとデモクレイトスが考案し、私が仕上げた」（第10巻45節6）。
           ポリュビオス自身の役割は、考案ではなく仕上げと記録です。
         </p>
 
-        <h3>🔥 原典の松明信号</h3>
+        <h3 data-i18n="study.h.signal">🔥 原典の松明信号</h3>
         <ul>
-          <li>ギリシャ語のアルファベット24文字を5つの群に分ける（5＋5＋5＋5＋4。最後の群だけ1文字少ない）</li>
-          <li>文字を書いた板を5枚つくり、送信側と受信側が同じものを持つ</li>
-          <li>長さ10フィート・人の高さの衝立で左右を仕切り、左に「何枚目の板か」、右に「その板の何番目の文字か」の数だけ松明を立てる</li>
-          <li>受信側は2本の筒を持つ照準器で、左右の松明を別々に数える</li>
-          <li>原典の例＝κは第2群の5番目なので、左に2本・右に5本（第10巻45節11〜12、46節1〜3）</li>
+          <li data-i18n="study.signal.li1">ギリシャ語のアルファベット24文字を5つの群に分ける（5＋5＋5＋5＋4。最後の群だけ1文字少ない）</li>
+          <li data-i18n="study.signal.li2">文字を書いた板を5枚つくり、送信側と受信側が同じものを持つ</li>
+          <li data-i18n="study.signal.li3">長さ10フィート・人の高さの衝立で左右を仕切り、左に「何枚目の板か」、右に「その板の何番目の文字か」の数だけ松明を立てる</li>
+          <li data-i18n="study.signal.li4">受信側は2本の筒を持つ照準器で、左右の松明を別々に数える</li>
+          <li data-i18n="study.signal.li5">原典の例＝κは第2群の5番目なので、左に2本・右に5本（第10巻45節11〜12、46節1〜3）</li>
         </ul>
-        <p>
+        <p data-i18n="study.signal.p">
           つまり原典は「5×5の表」ではなく「5枚の板」であり、松明は手で持つのではなく、仕切った空間に立てるものでした。
           先行する方法として、ポリュビオスはアイネイアス・タクティコスの水時計を使う方式を挙げ、
           それでは決めておいた事柄しか送れないと批判しています（第10巻44節）。
         </p>
 
-        <h3>📋 ポリュビオス表（5×5）</h3>
+        <h3 data-i18n="study.h.square">📋 ポリュビオス表（5×5）</h3>
         <pre class="code-block">
   1 2 3 4   5
 1 a b c d   e
@@ -320,71 +323,71 @@
 3 l m n o   p
 4 q r s t   u
 5 v w x y   z</pre>
-        <p>
+        <p data-i18n="study.square.p">
           いま広く使われるこの5×5の形は後世のものです。ラテン文字26文字を25マスに収めるために、
           iとjを同じマスに入れます。cとk、vとwをまとめる流儀や、qを落とす流儀もあります。
         </p>
-        <p class="source">
+        <p class="source" data-i18n="study.square.source">
           「ポリュビオス方陣」という呼び名も後世のものです。20世紀前半の暗号の教本（Hitt 1916、Langie 1922、Friedman 1931・1941）は、
           同じしくみを一貫して「チェッカー盤（checkerboard）」「二分アルファベット（bipartite alphabet）」と呼んでいます。
         </p>
 
-        <h3>🔐 暗号化の原理</h3>
-        <p>各文字を「行番号」と「列番号」の数字ペアに変換します。</p>
+        <h3 data-i18n="study.h.how">🔐 暗号化の原理</h3>
+        <p data-i18n="study.how.p">各文字を「行番号」と「列番号」の数字ペアに変換します。</p>
         <ul>
-          <li>'h' → 2行3列 → "23"</li>
-          <li>'e' → 1行5列 → "15"</li>
-          <li>'l' → 3行1列 → "31"</li>
-          <li>'l' → 3行1列 → "31"</li>
-          <li>'o' → 3行4列 → "34"</li>
+          <li data-i18n="study.how.ex1">'h' → 2行3列 → "23"</li>
+          <li data-i18n="study.how.ex2">'e' → 1行5列 → "15"</li>
+          <li data-i18n="study.how.ex3">'l' → 3行1列 → "31"</li>
+          <li data-i18n="study.how.ex3">'l' → 3行1列 → "31"</li>
+          <li data-i18n="study.how.ex4">'o' → 3行4列 → "34"</li>
         </ul>
-        <p>結果: "hello" → "23 15 31 31 34"</p>
+        <p data-i18n="study.how.result">結果: "hello" → "23 15 31 31 34"</p>
 
-        <h3>🎯 暗号としての性質</h3>
+        <h3 data-i18n="study.h.props">🎯 暗号としての性質</h3>
         <ul>
-          <li><strong>1文字が2つの数字になる</strong>：平文の単位は1文字のままで、暗号文の文字が2つになる（polyliteral／bipartite）。
+          <li data-i18n="study.props.li1"><strong>1文字が2つの数字になる</strong>：平文の単位は1文字のままで、暗号文の文字が2つになる（polyliteral／bipartite）。
             プレイフェア暗号のように平文2文字をまとめて扱う方式（複字式・polygraphic）とは別である</li>
-          <li><strong>単一換字式</strong>：同じ文字はいつも同じペアになる</li>
-          <li><strong>頻度分析に弱い</strong>：単文字の出現頻度がそのまま残る。
+          <li data-i18n="study.props.li2"><strong>単一換字式</strong>：同じ文字はいつも同じペアになる</li>
+          <li data-i18n="study.props.li3"><strong>頻度分析に弱い</strong>：単文字の出現頻度がそのまま残る。
             Friedmanは「ペアで数えた頻度分布は、単文字の分布とまったく同じ性質を持つ」と述べ、単一換字式と同じ手順で解けるとしている</li>
-          <li><strong>鍵はキーワードによる並べ替え</strong>：送信者と受信者が同じキーワードを使う。
+          <li data-i18n="study.props.li4"><strong>鍵はキーワードによる並べ替え</strong>：送信者と受信者が同じキーワードを使う。
             実際に使われた方陣は、キーワードから作らずにシャッフルしたものもある</li>
         </ul>
-        <p class="source">
+        <p class="source" data-i18n="study.props.source">
           「最初の分置式（fractionating）暗号」と紹介されることがありますが、これは正確ではありません。
           Friedmanの定義では分置は「分解→分離→再結合→再構成」の4段階で、素の方陣は分解までしかしません。
           分離と再結合はBifidやADFGXで加わります。
         </p>
 
-        <h3>📊 暗号文の特徴</h3>
+        <h3 data-i18n="study.h.cipher">📊 暗号文の特徴</h3>
         <ul>
-          <li>数字だけで構成される</li>
-          <li>1〜5（6×6モードでは1〜6）の数字しか使わない</li>
-          <li>数字の個数は偶数になる（区切りや記号を混ぜない場合）</li>
+          <li data-i18n="study.cipher.li1">数字だけで構成される</li>
+          <li data-i18n="study.cipher.li2">1〜5（6×6モードでは1〜6）の数字しか使わない</li>
+          <li data-i18n="study.cipher.li3">数字の個数は偶数になる（区切りや記号を混ぜない場合）</li>
         </ul>
 
-        <h3>🌐 方陣を部品に使う暗号</h3>
+        <h3 data-i18n="study.h.derived">🌐 方陣を部品に使う暗号</h3>
         <ul>
-          <li><strong>ADFGX／ADFGVX</strong>：第一次世界大戦のドイツ軍。1918年3月1日にJを除く25文字の方陣（指標はA・D・F・G・X）で始まり、
+          <li data-i18n="study.derived.li1"><strong>ADFGX／ADFGVX</strong>：第一次世界大戦のドイツ軍。1918年3月1日にJを除く25文字の方陣（指標はA・D・F・G・X）で始まり、
             6月1日にVを足して36マスに拡張した。フランスが最初に解読したのは4月6日である</li>
-          <li><strong>タップ符号（tap code）</strong>：1965年6月、ベトナムのホアロー収容所で米軍捕虜が使い始めた。
+          <li data-i18n="study.derived.li2"><strong>タップ符号（tap code）</strong>：1965年6月、ベトナムのホアロー収容所で米軍捕虜が使い始めた。
             5×5の行→列の順で壁を叩く。<strong>iとjではなくkをcに置き換える</strong>流儀である</li>
-          <li><strong>Bifid・Trifid</strong>：方陣で分解した数字を並べ替えてから組み直す（分置式）</li>
-          <li><strong>ニヒリスト暗号・Straddling checkerboard・VIC暗号</strong>：方陣で数字にしてから、さらに加算や可変長の符号を重ねる</li>
+          <li data-i18n="study.derived.li3"><strong>Bifid・Trifid</strong>：方陣で分解した数字を並べ替えてから組み直す（分置式）</li>
+          <li data-i18n="study.derived.li4"><strong>ニヒリスト暗号・Straddling checkerboard・VIC暗号</strong>：方陣で数字にしてから、さらに加算や可変長の符号を重ねる</li>
         </ul>
-        <p class="source">
+        <p class="source" data-i18n="study.derived.source">
           「文字を数字に置き換える発想がモールス符号や現代の通信の基礎になった」と書かれることがありますが、
           これを裏づける資料は見つかりませんでした。モールス符号は文字の使用頻度にもとづく可変長の符号で、設計の考え方が異なります。
           電信との結びつきがはっきりしているのは、電信の秘匿のためにWheatstoneが考案したプレイフェア暗号のほうです。
         </p>
 
-        <h3>📚 参考にした資料</h3>
+        <h3 data-i18n="study.h.sources">📚 参考にした資料</h3>
         <ul class="source-list">
-          <li>Polybius, <em>The Histories</em>, Book X, 43–47（Loeb Classical Library 版の英訳、Perseus のギリシャ語原文）</li>
-          <li>Aeneas Tacticus, <em>How to Survive under Siege</em>, XXXI</li>
-          <li>W. F. Friedman, <em>Military Cryptanalysis, Part I</em> §35・§47、<em>Part IV</em> §37・§44</li>
-          <li>P. Hitt, <em>Manual for the Solution of Military Ciphers</em>（1916）／A. Langie, <em>Cryptography</em>（1922）</li>
-          <li>PBS <em>American Experience</em>「Return with Honor」（1999）／CIA <em>Studies in Intelligence</em> 60(1)（2016）</li>
+          <li data-i18n="study.sources.li1">Polybius, <em>The Histories</em>, Book X, 43–47（Loeb Classical Library 版の英訳、Perseus のギリシャ語原文）</li>
+          <li data-i18n="study.sources.li2">Aeneas Tacticus, <em>How to Survive under Siege</em>, XXXI</li>
+          <li data-i18n="study.sources.li3">W. F. Friedman, <em>Military Cryptanalysis, Part I</em> §35・§47、<em>Part IV</em> §37・§44</li>
+          <li data-i18n="study.sources.li4">P. Hitt, <em>Manual for the Solution of Military Ciphers</em>（1916）／A. Langie, <em>Cryptography</em>（1922）</li>
+          <li data-i18n="study.sources.li5">PBS <em>American Experience</em>「Return with Honor」（1999）／CIA <em>Studies in Intelligence</em> 60(1)（2016）</li>
         </ul>
       </div>
     </section>
@@ -396,15 +399,16 @@
 
   <footer>
     <div class="footer">
-      🔗 GitHubリポジトリーはこちら（
+      🔗 <span data-i18n="ui.repo">GitHubリポジトリーはこちら（</span>
       <a href="https://github.com/ipusiron/polybius-cipherlab" target="_blank" rel="noopener noreferrer">
         ipusiron/polybius-cipherlab
-      </a> ）
+      </a><span data-i18n="ui.repoClose">）</span>
     </div>
   </footer>
 
   <script src="js/polybius-core.js"></script>
   <script src="js/messages.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

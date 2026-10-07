@@ -27,9 +27,9 @@ test('インラインのイベントハンドラーと style 属性がない', (
   assert.doesNotMatch(html, /javascript:/i);
 });
 
-test('スクリプトは計算部・文言・画面の順に読み込む', () => {
+test('スクリプトは計算部・文言・言語・画面の順に読み込む', () => {
   const srcs = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((m) => m[1]);
-  assert.deepEqual(srcs, ['js/polybius-core.js', 'js/messages.js', 'script.js']);
+  assert.deepEqual(srcs, ['js/polybius-core.js', 'js/messages.js', 'js/i18n.js', 'script.js']);
 });
 
 test('主要な要素の id がそろっている', () => {
@@ -58,14 +58,18 @@ test('タブとパネルが id で結ばれている', () => {
 });
 
 test('ヘルプは button で、ブラウザー標準のツールチップ（title）を使わない', () => {
-  const helps = [...html.matchAll(/<button type="button" class="help-icon" data-help="([^"]+)" aria-label="([^"]+)">/g)];
+  const helps = [...html.matchAll(/<button type="button" class="help-icon" data-help="([^"]+)"[^>]*>/g)];
   assert.equal(helps.length, 6);
   assert.doesNotMatch(html, /class="help-icon"[^>]*\stitle=/);
   for (const [, text] of helps) assert.ok(text.length > 5);
+  // 言語を切り替えたときに差し替えられるようになっている
+  const i18n = [...html.matchAll(/class="help-icon"[^>]*data-i18n-attr="data-help:([\w.]+);aria-label:([\w.]+)"/g)];
+  assert.equal(i18n.length, 6);
 });
 
-test('テーマのボタンに aria-label がある', () => {
-  assert.match(html, /<button id="theme-toggle"[^>]*aria-label="[^"]+"/);
+test('テーマと言語のボタンに読み上げ用の名前がある', () => {
+  assert.match(html, /<button id="theme-toggle"[^>]*data-i18n-attr="aria-label:theme\.toLight"/);
+  assert.match(html, /<button id="lang-toggle"[^>]*data-i18n-attr="aria-label:ui\.langLabel"/);
 });
 
 test('noscript と viewport と lang がある', () => {

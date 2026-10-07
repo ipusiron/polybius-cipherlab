@@ -6,7 +6,8 @@
   'use strict';
 
   const Core = globalThis.PolybiusCore;
-  const t = (key, vars) => globalThis.PolybiusMessages.t(key, vars);
+  const I18n = globalThis.PolybiusI18n;
+  const t = (key, vars) => I18n.t(key, vars);
   const $ = (id) => document.getElementById(id);
 
   // 対応表に並べる上限。これを超えたら残りの件数だけを出す（1万文字でアニメが何分も続くのを防ぐ）
@@ -397,11 +398,13 @@
     details.className = 'advanced';
 
     const summary = document.createElement('summary');
+    summary.dataset.i18n = 'adv.summary';
     summary.textContent = t('adv.summary');
     details.appendChild(summary);
 
     const note = document.createElement('p');
     note.className = 'hint';
+    note.dataset.i18n = 'adv.note';
     note.textContent = t('adv.note');
     details.appendChild(note);
 
@@ -414,12 +417,14 @@
       const label = document.createElement('label');
       label.className = 'label';
       label.htmlFor = `${f.key}-${tab}`;
+      label.dataset.i18n = `adv.${f.key}`;
       label.textContent = t(`adv.${f.key}`);
       const sel = document.createElement('select');
       sel.id = `${f.key}-${tab}`;
       for (const v of f.values) {
         const opt = document.createElement('option');
         opt.value = v;
+        opt.dataset.i18n = `adv.${f.key}.${v}`;
         opt.textContent = t(`adv.${f.key}.${v}`);
         sel.appendChild(opt);
       }
@@ -435,6 +440,7 @@
       const label = document.createElement('label');
       label.className = 'label';
       label.htmlFor = `${key}-${tab}`;
+      label.dataset.i18n = `adv.${key}`;
       label.textContent = t(`adv.${key}`);
       const input = document.createElement('input');
       input.type = 'text';
@@ -569,7 +575,11 @@
     textEl.addEventListener('input', update);
     kwEl.addEventListener('input', update);
     update();
+    refresh.compare = update;
   }
+
+  // 言語を切り替えたときに描き直すもの（計算し直さないと古い言語が残る）
+  const refresh = {};
 
   // 松明信号のタブ。原典の方法（5枚の板と、衝立で仕切った左右の松明）を再現する
   const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -646,29 +656,37 @@
       }
     };
 
-    groupsBox.replaceChildren();
-    Core.greekGroups().forEach((group, gi) => {
-      const row = document.createElement('div');
-      row.className = 'sig-group';
-      const name = document.createElement('span');
-      name.className = 'sig-group-name';
-      name.textContent = t('sig.groupLabel', { n: gi + 1 });
-      row.appendChild(name);
-      group.forEach((ch, ci) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'sig-char';
-        btn.dataset.char = ch;
-        btn.textContent = ch;
-        btn.setAttribute('aria-pressed', 'false');
-        btn.setAttribute('aria-label', t('sig.charLabel', { char: ch, group: gi + 1, index: ci + 1 }));
-        btn.addEventListener('click', () => select(ch));
-        row.appendChild(btn);
+    let current = 'Κ'; // 原典に出てくる例
+    const build = () => {
+      groupsBox.replaceChildren();
+      Core.greekGroups().forEach((group, gi) => {
+        const row = document.createElement('div');
+        row.className = 'sig-group';
+        const name = document.createElement('span');
+        name.className = 'sig-group-name';
+        name.textContent = t('sig.groupLabel', { n: gi + 1 });
+        row.appendChild(name);
+        group.forEach((ch, ci) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'sig-char';
+          btn.dataset.char = ch;
+          btn.textContent = ch;
+          btn.setAttribute('aria-pressed', 'false');
+          btn.setAttribute('aria-label', t('sig.charLabel', { char: ch, group: gi + 1, index: ci + 1 }));
+          btn.addEventListener('click', () => {
+            current = ch;
+            select(ch);
+          });
+          row.appendChild(btn);
+        });
+        groupsBox.appendChild(row);
       });
-      groupsBox.appendChild(row);
-    });
+      select(current);
+    };
 
-    select('Κ'); // 原典に出てくる例
+    build();
+    refresh.signal = build;
   }
 
   // ヘルプの「?」。hover だけでは触る画面で読めないので、押しても出るようにする
@@ -733,8 +751,31 @@
     });
   }
 
+  // 言語の切り替え
+  function setupLang() {
+    const btn = $('lang-toggle');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const langs = globalThis.PolybiusMessages.LANGS;
+      const next = langs[(langs.indexOf(I18n.lang) + 1) % langs.length];
+      I18n.set(next);
+    });
+    I18n.onChange(() => {
+      // 動的に作った部分は計算し直す。結果の文言は言語が混ざらないように消す
+      for (const tab of Object.keys(PANELS)) renderPreview(tab);
+      for (const fn of Object.values(refresh)) fn();
+      for (const id of ['enc-status', 'dec-status']) setStatus(id, []);
+      for (const id of ['enc-map', 'dec-map']) {
+        const list = $(id);
+        if (list) list.replaceChildren();
+      }
+      applyTheme(document.body.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+    });
+  }
+
   // Init
   function init() {
+    I18n.init();
     initTheme();
     setupTabs();
     setupEncrypt();
@@ -743,6 +784,7 @@
     setupCompare();
     setupSignal();
     setupHelp();
+    setupLang();
     for (const tab of Object.keys(PANELS)) renderPreview(tab);
   }
 
