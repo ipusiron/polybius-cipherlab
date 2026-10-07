@@ -70,6 +70,14 @@
     'cmp.keywordHint': 'キーワードを入れると、5通りの違いが出ます。',
     'cmp.empty': '平文を入れてください。',
 
+    'sig.groupLabel': '第{n}群',
+    'sig.result': '{char}は第{group}群の{index}番目です。左に{group}本、右に{index}本の松明を立てます。',
+    'sig.figureLabel': '左に{group}本、右に{index}本の松明を立てた図',
+    'sig.left': '左：何枚目の板か',
+    'sig.right': '右：その板の何番目か',
+    'sig.screen': '衝立',
+    'sig.charLabel': '{char}（第{group}群の{index}番目）',
+
     'matrix.cellLabel': '{char}（{row}行{col}列） ペア{pair}',
     'matrix.corner': '行＼列',
 

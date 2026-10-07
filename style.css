@@ -10,6 +10,7 @@
   --danger:#ff6b6b;
   --border:#25303a;
   --focus:#9fd0ff;
+  --flame:#e8821e;
   --shadow: 0 6px 20px rgba(0,0,0,.35);
   --radius:16px;
 }
@@ -26,6 +27,7 @@
   --danger:#dc2626;
   --border:#e2e8f0;
   --focus:#1d4ed8;
+  --flame:#b45309;
   --shadow: 0 6px 20px rgba(0,0,0,.08);
 }
 
@@ -219,6 +221,61 @@ textarea{resize:vertical}
 .hint{color:var(--muted);font-size:13px;margin-top:6px;margin-bottom:10px}
 .mt{margin-top:10px}
 .gap{gap:10px; margin-top:8px}
+
+/* 松明信号のタブ */
+.sig-groups{
+  display:grid;
+  gap:8px;
+  margin:10px 0 20px;
+}
+.sig-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+}
+.sig-group-name{
+  color:var(--muted);
+  font-size:13px;
+  min-width:64px;
+}
+.sig-char{
+  min-width:44px;
+  min-height:44px;
+  padding:0;
+  background:var(--panel);
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:10px;
+  font-size:18px;
+  font-family:inherit;
+  cursor:pointer;
+  transition:all .2s;
+}
+.sig-char:hover{border-color:var(--primary)}
+.sig-char.selected{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:var(--on-primary);
+  font-weight:700;
+}
+.sig-figure{
+  margin:10px 0;
+  max-width:520px;
+}
+.signal-svg{width:100%; height:auto; display:block}
+.sig-bg{fill:var(--panel)}
+.sig-ground{stroke:var(--border); stroke-width:2}
+.sig-screen{fill:var(--border)}
+.sig-label{fill:var(--muted); font-size:11px; font-family:inherit}
+.torch-stick{fill:var(--muted)}
+.torch-out{fill:none; stroke:var(--border); stroke-width:2}
+.torch-flame{fill:var(--flame)}
+.sig-note{
+  color:var(--text);
+  font-size:15px;
+  margin:6px 0 16px;
+}
 
 /* くらべるタブ */
 .cmp-list{

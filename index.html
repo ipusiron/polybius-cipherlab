@@ -28,6 +28,7 @@
     <button class="tab" id="tab-btn-decrypt" data-tab="decrypt" role="tab" aria-selected="false" aria-controls="tab-decrypt" tabindex="-1">復号 (Decrypt)</button>
     <button class="tab" id="tab-btn-matrix" data-tab="matrix" role="tab" aria-selected="false" aria-controls="tab-matrix" tabindex="-1">マトリクス (Matrix)</button>
     <button class="tab" id="tab-btn-compare" data-tab="compare" role="tab" aria-selected="false" aria-controls="tab-compare" tabindex="-1">くらべる (Compare)</button>
+    <button class="tab" id="tab-btn-signal" data-tab="signal" role="tab" aria-selected="false" aria-controls="tab-signal" tabindex="-1">松明信号 (Fire Signal)</button>
     <button class="tab" id="tab-btn-history" data-tab="history" role="tab" aria-selected="false" aria-controls="tab-history" tabindex="-1">座学 (Study)</button>
   </nav>
 
@@ -238,6 +239,42 @@
           調べた範囲では、これを選べるツールは1つだけでした。
         </p>
         <div id="cmp-fill" class="cmp-grid"></div>
+      </div>
+    </section>
+
+    <!-- Fire signal -->
+    <section id="tab-signal" class="panel" role="tabpanel" aria-labelledby="tab-btn-signal" tabindex="0">
+      <div class="card">
+        <h2>原典の松明信号</h2>
+        <p class="hint">
+          いま使われる5×5の方陣は後世の形です。ポリュビオスが『歴史』に記した方法は、5枚の板と松明を使う通信でした。
+          ここでは、その方法をそのまま再現します。
+        </p>
+
+        <h3>5枚の板</h3>
+        <p>
+          ギリシャ語の24文字を5つの群に分け、同じ板を送信側と受信側が持ちます。最後の群だけ1文字少なくなります。
+          文字を選ぶと、立てる松明の本数が決まります。
+        </p>
+        <div id="sig-groups" class="sig-groups"></div>
+
+        <h3>信号</h3>
+        <p>
+          長さ10フィート・人の高さの衝立で左右を仕切り、左の空間に「何枚目の板か」、右の空間に「その板の何番目の文字か」の数だけ松明を立てます。
+          受信側は2本の筒を持つ照準器で、左右を別々に数えます。
+        </p>
+        <div id="sig-figure" class="sig-figure"></div>
+        <p id="sig-note" class="sig-note" aria-live="polite"></p>
+
+        <h3>原典の例</h3>
+        <ul>
+          <li>κ は第2群の5番目である。左に2本、右に5本を立てる</li>
+          <li>ρ は第4群の2番目である。左に4本、右に2本を立てる</li>
+        </ul>
+        <p class="source">
+          出典: Polybius『歴史』第10巻45節8〜12、46節1〜3。
+          この方法を考えたのはクレオクセノスとデモクレイトスで、ポリュビオスは仕上げたと書いています（第10巻45節6）。
+        </p>
       </div>
     </section>
 

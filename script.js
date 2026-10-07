@@ -571,6 +571,106 @@
     update();
   }
 
+  // 松明信号のタブ。原典の方法（5枚の板と、衝立で仕切った左右の松明）を再現する
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  function svgEl(name, attrs) {
+    const el = document.createElementNS(SVG_NS, name);
+    for (const [k, v] of Object.entries(attrs || {})) el.setAttribute(k, String(v));
+    return el;
+  }
+
+  // 松明1本。立っていれば炎を描く
+  function torch(x, baseY, lit) {
+    const g = svgEl('g', { class: lit ? 'torch lit' : 'torch' });
+    g.appendChild(svgEl('rect', { x: x - 2, y: baseY - 34, width: 4, height: 34, rx: 2, class: 'torch-stick' }));
+    if (lit) {
+      g.appendChild(svgEl('ellipse', { cx: x, cy: baseY - 42, rx: 7, ry: 11, class: 'torch-flame' }));
+    } else {
+      g.appendChild(svgEl('circle', { cx: x, cy: baseY - 40, r: 5, class: 'torch-out' }));
+    }
+    return g;
+  }
+
+  function renderSignalFigure(signal) {
+    const box = $('sig-figure');
+    if (!box) return;
+    const left = signal ? signal.group : 0;
+    const right = signal ? signal.index : 0;
+
+    const svg = svgEl('svg', {
+      viewBox: '0 0 360 200',
+      role: 'img',
+      'aria-label': t('sig.figureLabel', { group: left, index: right }),
+      class: 'signal-svg',
+    });
+
+    const baseY = 150;
+    svg.appendChild(svgEl('rect', { x: 0, y: 0, width: 360, height: 200, class: 'sig-bg' }));
+    // 地面
+    svg.appendChild(svgEl('line', { x1: 10, y1: baseY, x2: 350, y2: baseY, class: 'sig-ground' }));
+    // 衝立（長さ10フィート・人の高さ）
+    svg.appendChild(svgEl('rect', { x: 172, y: 58, width: 16, height: baseY - 58, rx: 3, class: 'sig-screen' }));
+
+    // 左右に5本ずつの位置を取り、立てる本数だけ火を入れる
+    for (let i = 0; i < 5; i++) {
+      svg.appendChild(torch(30 + i * 30, baseY, i < left));
+      svg.appendChild(torch(210 + i * 30, baseY, i < right));
+    }
+
+    const leftLabel = svgEl('text', { x: 90, y: 176, class: 'sig-label', 'text-anchor': 'middle' });
+    leftLabel.textContent = t('sig.left');
+    const rightLabel = svgEl('text', { x: 270, y: 176, class: 'sig-label', 'text-anchor': 'middle' });
+    rightLabel.textContent = t('sig.right');
+    const screenLabel = svgEl('text', { x: 180, y: 50, class: 'sig-label', 'text-anchor': 'middle' });
+    screenLabel.textContent = t('sig.screen');
+    svg.append(leftLabel, rightLabel, screenLabel);
+
+    box.replaceChildren(svg);
+  }
+
+  function setupSignal() {
+    const groupsBox = $('sig-groups');
+    if (!groupsBox) return;
+
+    const select = (ch) => {
+      const signal = Core.torchSignal(ch);
+      groupsBox.querySelectorAll('.sig-char').forEach((b) => {
+        b.classList.toggle('selected', b.dataset.char === (signal ? signal.char : ''));
+        b.setAttribute('aria-pressed', b.dataset.char === (signal ? signal.char : '') ? 'true' : 'false');
+      });
+      renderSignalFigure(signal);
+      const note = $('sig-note');
+      if (note && signal) {
+        note.textContent = t('sig.result', { char: signal.char, group: signal.group, index: signal.index });
+      }
+    };
+
+    groupsBox.replaceChildren();
+    Core.greekGroups().forEach((group, gi) => {
+      const row = document.createElement('div');
+      row.className = 'sig-group';
+      const name = document.createElement('span');
+      name.className = 'sig-group-name';
+      name.textContent = t('sig.groupLabel', { n: gi + 1 });
+      row.appendChild(name);
+      group.forEach((ch, ci) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sig-char';
+        btn.dataset.char = ch;
+        btn.textContent = ch;
+        btn.setAttribute('aria-pressed', 'false');
+        btn.setAttribute('aria-label', t('sig.charLabel', { char: ch, group: gi + 1, index: ci + 1 }));
+        btn.addEventListener('click', () => select(ch));
+        row.appendChild(btn);
+      });
+      groupsBox.appendChild(row);
+    });
+
+    select('Κ'); // 原典に出てくる例
+  }
+
   // ヘルプの「?」。hover だけでは触る画面で読めないので、押しても出るようにする
   function setupHelp() {
     const closeAll = () => document.querySelectorAll('.help-icon.open').forEach((x) => x.classList.remove('open'));
@@ -641,6 +741,7 @@
     setupDecrypt();
     setupMatrix();
     setupCompare();
+    setupSignal();
     setupHelp();
     for (const tab of Object.keys(PANELS)) renderPreview(tab);
   }
