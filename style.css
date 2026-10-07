@@ -67,6 +67,29 @@ body:not([data-theme="light"]){
 .site-header h1{margin:0;font-size:clamp(20px, 4.5vw, 28px);letter-spacing:.3px;overflow-wrap:anywhere}
 .subtitle{margin:.5rem 0 0;color:var(--muted);font-size:14px}
 
+.header-buttons{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-shrink:0;
+}
+.lang-toggle{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:8px 12px;
+  min-height:44px;
+  color:var(--text);
+  font-size:14px;
+  font-family:inherit;
+  cursor:pointer;
+  transition:all .2s;
+}
+.lang-toggle:hover{
+  background:var(--panel);
+  border-color:var(--primary);
+}
+
 .theme-toggle{
   background:var(--card);
   border:1px solid var(--border);

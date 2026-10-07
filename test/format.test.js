@@ -5,7 +5,8 @@ import { read } from './load.js';
 // 1行に詰め込んだ（minify した）ファイルを見つける。行数の下限も見る
 const FILES = [
   { path: 'js/polybius-core.js', maxLine: 160, minLines: 150 },
-  { path: 'js/messages.js', maxLine: 160, minLines: 30 },
+  { path: 'js/messages.js', maxLine: 420, minLines: 300 }, // 1行1文言なので長い行がある
+  { path: 'js/i18n.js', maxLine: 160, minLines: 50 },
   { path: 'script.js', maxLine: 160, minLines: 250 },
   { path: 'style.css', maxLine: 160, minLines: 300 },
   { path: 'index.html', maxLine: 250, minLines: 200 },

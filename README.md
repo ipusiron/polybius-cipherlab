@@ -36,6 +36,8 @@ hub: true
 ---
 -->
 
+[English](README.en.md) · 日本語
+
 # Polybius CipherLab - ポリュビオス暗号ツール
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/ipusiron/polybius-cipherlab?style=social)
@@ -99,6 +101,7 @@ hub: true
 - 読み替えの明示：復号で2通りに読める文字（iとjなど）を対応表に両方出し、件数を知らせる
 - 流儀をくらべる：同じ平文を5つの流儀で暗号化して違いを並べ、キーワードのあとの並べ方5通りを方陣で見せる
 - 原典の松明信号：ギリシャ語24文字を5つの群に分け、衝立で仕切った左右に松明を立てる原典の方法を再現する
+- 日本語と英語：画面右上のボタンで切り替える（`?lang=en` でも指定できる）
 - 座学：原典の記述と、方陣を部品に使う暗号を出典つきで解説する
 - テーマ：ライトとダーク（初期値はブラウザーの設定にしたがう）
 
@@ -155,7 +158,7 @@ hub: true
 | 松明信号 (Fire Signal) | 原典の方法を再現する。5枚の板から文字を選ぶと、立てる松明の本数が決まる |
 | 座学 (Study) | 原典の記述、5×5の方陣、暗号としての性質、方陣を部品に使う暗号 |
 
-3つのタブは**それぞれ独立した設定**を持ちます。暗号化タブのキーワードを変えても、復号タブの方陣は変わりません。設定を移したいときは「同期」ボタンを使います。
+暗号化・復号・マトリクスの3つのタブは**それぞれ独立した設定**を持ちます。暗号化タブのキーワードを変えても、復号タブの方陣は変わりません。設定を移したいときは「同期」ボタンを使います。
 
 ---
 
@@ -334,12 +337,14 @@ polybius-cipherlab/
 ├── style.css               # 配色とレイアウト（ライト・ダーク、狭い画面への対応）
 ├── js/                     # スクリプト
 │   ├── polybius-core.js    # 計算部（方陣の生成・暗号化・復号。DOMを使わない）
-│   └── messages.js         # 画面に出す文言
+│   ├── messages.js         # 画面に出す文言（日本語・英語）
+│   └── i18n.js             # 言語の選び方と、画面の文言の差し替え
 ├── test/                   # テスト（node --test で実行する）
 │   ├── load.js             # 画面と同じスクリプトの読み込みと、照合用の参照実装
 │   ├── core.test.js        # 計算部（往復・既知解答・境界・不正入力）
 │   ├── options.test.js     # 設定（統合の流儀・充填順・座標のラベルと順）
 │   ├── signal.test.js      # 原典の松明信号（5群の分け方・原典の例の数値）
+│   ├── i18n.test.js        # 日英の辞書（キーの一致・差し込みの一致・言語の選び方）
 │   ├── html.test.js        # index.html の静的な検査（CSP・id・aria・外部参照）
 │   ├── contrast.test.js    # 配色のコントラスト比（ライト・ダークとも4.5:1以上）
 │   ├── format.test.js      # 1行に詰め込んでいないか、計算部がDOMを使っていないか
@@ -355,13 +360,22 @@ polybius-cipherlab/
 │   ├── screenshot4.png     # スクリーンショット（座学タブ・ダークモード）
 │   ├── screenshot5.png     # スクリーンショット（詳しい設定・ADFGX）
 │   ├── screenshot6.png     # スクリーンショット（くらべるタブ）
-│   └── screenshot7.png     # スクリーンショット（松明信号タブ）
+│   ├── screenshot7.png     # スクリーンショット（松明信号タブ）
+│   └── en/                 # 英語の画面のスクリーンショット
+│       ├── screenshot.png  # スクリーンショット（暗号化タブ）
+│       ├── screenshot2.png # スクリーンショット（マトリクスタブ）
+│       ├── screenshot3.png # スクリーンショット（復号タブ）
+│       ├── screenshot4.png # スクリーンショット（座学タブ・ダークモード）
+│       ├── screenshot5.png # スクリーンショット（詳しい設定・ADFGX）
+│       ├── screenshot6.png # スクリーンショット（くらべるタブ）
+│       └── screenshot7.png # スクリーンショット（松明信号タブ）
 ├── package.json            # テストの実行設定（依存パッケージはない）
 ├── CLAUDE.md               # Claude Code 向けの案内
 ├── LICENSE                 # MITライセンス
 ├── .gitignore              # Git の除外設定
 ├── .nojekyll               # GitHub Pages で Jekyll を使わない指定
-└── README.md               # このファイル
+├── README.md               # このファイル
+└── README.en.md            # 英語版のREADME
 ```
 
 ---
