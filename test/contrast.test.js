@@ -48,6 +48,7 @@ const PAIRS = [
   ['danger', 'card'],
   ['focus', 'card'],
   ['focus', 'bg'],
+  ['flame', 'panel'],
 ];
 
 const dark = readVars(':root');

@@ -326,6 +326,34 @@
     return { plain: out.join(''), mapping, stats };
   }
 
+  // 原典（Polybius『歴史』第10巻45〜46節）の松明信号
+  // ギリシャ語の24文字を5つの群に分け、左に「何枚目の板か」、右に「その板の何番目か」の数だけ松明を立てる
+  const GREEK = 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ';
+  const GREEK_GROUP_SIZE = 5;
+
+  function greekGroups() {
+    const groups = [];
+    for (let i = 0; i < GREEK.length; i += GREEK_GROUP_SIZE) {
+      groups.push([...GREEK.slice(i, i + GREEK_GROUP_SIZE)]);
+    }
+    return groups;
+  }
+
+  function torchSignal(ch) {
+    const up = String(ch ?? '').toUpperCase();
+    const at = [...GREEK].indexOf(up);
+    if (at < 0) return null;
+    return {
+      char: up,
+      group: Math.floor(at / GREEK_GROUP_SIZE) + 1,
+      index: (at % GREEK_GROUP_SIZE) + 1,
+    };
+  }
+
+  function torchSignals(text) {
+    return [...String(text ?? '')].map((ch) => ({ char: ch, signal: torchSignal(ch) }));
+  }
+
   // 25マスに収める流儀をくらべる。同じ平文を5通りで暗号化し、既定との違いを数える
   function compareMerges(options) {
     const opts = options || {};
@@ -378,6 +406,11 @@
     buildSquare,
     compareMerges,
     compareFills,
+    GREEK,
+    GREEK_GROUP_SIZE,
+    greekGroups,
+    torchSignal,
+    torchSignals,
     encrypt,
     formatCipher,
     decrypt,
