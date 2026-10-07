@@ -286,6 +286,7 @@ polybius-cipherlab/
 ├── test/                   # テスト（node --test で実行する）
 │   ├── load.js             # 画面と同じスクリプトの読み込みと、照合用の参照実装
 │   ├── core.test.js        # 計算部（往復・既知解答・境界・不正入力）
+│   ├── options.test.js     # 設定（統合の流儀・充填順・座標のラベルと順）
 │   ├── html.test.js        # index.html の静的な検査（CSP・id・aria・外部参照）
 │   ├── contrast.test.js    # 配色のコントラスト比（ライト・ダークとも4.5:1以上）
 │   ├── format.test.js      # 1行に詰め込んでいないか、計算部がDOMを使っていないか

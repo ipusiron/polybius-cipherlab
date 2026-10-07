@@ -35,7 +35,7 @@ test('方陣の対応表は双方向で一致する', () => {
   for (const mode of ['5x5', '6x6']) {
     const s = sq(mode, 'cipher');
     for (const [ch, pair] of Object.entries(s.charToPair)) {
-      if (s.merge[ch]) continue; // 読み替えた文字（J）は逆引きに入らない
+      if (s.map[ch]) continue; // 読み替えた文字（J）は逆引きに入らない
       assert.equal(s.pairToChar[pair], ch);
     }
     assert.equal(Object.keys(s.pairToChar).length, s.size * s.size);

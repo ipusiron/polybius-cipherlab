@@ -257,7 +257,7 @@
       if (s.merged.length) {
         parts.push(t('status.merged', {
           chars: s.merged.map((c) => c.toLowerCase()).join(' '),
-          to: (square.merge[s.merged[0]] || '').toLowerCase(),
+          to: (square.map[s.merged[0]] || '').toLowerCase(),
         }));
       }
       if (s.droppedSymbols) parts.push(t('status.droppedSymbols', { count: s.droppedSymbols }));
