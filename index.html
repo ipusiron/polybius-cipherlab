@@ -27,6 +27,7 @@
     <button class="tab active" id="tab-btn-encrypt" data-tab="encrypt" role="tab" aria-selected="true" aria-controls="tab-encrypt" tabindex="0">暗号化 (Encrypt)</button>
     <button class="tab" id="tab-btn-decrypt" data-tab="decrypt" role="tab" aria-selected="false" aria-controls="tab-decrypt" tabindex="-1">復号 (Decrypt)</button>
     <button class="tab" id="tab-btn-matrix" data-tab="matrix" role="tab" aria-selected="false" aria-controls="tab-matrix" tabindex="-1">マトリクス (Matrix)</button>
+    <button class="tab" id="tab-btn-compare" data-tab="compare" role="tab" aria-selected="false" aria-controls="tab-compare" tabindex="-1">くらべる (Compare)</button>
     <button class="tab" id="tab-btn-history" data-tab="history" role="tab" aria-selected="false" aria-controls="tab-history" tabindex="-1">座学 (Study)</button>
   </nav>
 
@@ -202,6 +203,41 @@
             <li>6×6モードではアルファベットと数字（0-9）を扱えます</li>
           </ul>
         </div>
+      </div>
+    </section>
+
+    <!-- Compare -->
+    <section id="tab-compare" class="panel" role="tabpanel" aria-labelledby="tab-btn-compare" tabindex="0">
+      <div class="card">
+        <h2>流儀をくらべる</h2>
+        <p class="hint">
+          ポリュビオス暗号は、ツールによって作り方が違います。同じ平文と同じキーワードでも結果が変わることを、ここで確かめられます。
+        </p>
+
+        <div class="row">
+          <div class="field grow">
+            <label class="label" for="cmp-text">平文</label>
+            <input id="cmp-text" type="text" value="hello world" />
+          </div>
+          <div class="field">
+            <label class="label" for="cmp-keyword">キーワード（任意）</label>
+            <input id="cmp-keyword" type="text" placeholder="例: key" />
+          </div>
+        </div>
+
+        <h3>25マスに収める方法</h3>
+        <p>
+          5×5の盤面は25マスしかないので、ラテン文字26文字のうち1つをほかと同じマスに入れるか、外すことになります。
+          どれを選ぶかはツールによって違います。
+        </p>
+        <div id="cmp-merge" class="cmp-list"></div>
+
+        <h3>キーワードのあとの並べ方</h3>
+        <p>
+          キーワードのあとに残りの文字をどう並べるかも、流儀が分かれます。
+          調べた範囲では、これを選べるツールは1つだけでした。
+        </p>
+        <div id="cmp-fill" class="cmp-grid"></div>
       </div>
     </section>
 

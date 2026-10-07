@@ -326,6 +326,41 @@
     return { plain: out.join(''), mapping, stats };
   }
 
+  // 25マスに収める流儀をくらべる。同じ平文を5通りで暗号化し、既定との違いを数える
+  function compareMerges(options) {
+    const opts = options || {};
+    const base = MERGES[opts.merge] ? opts.merge : DEFAULT_MERGE;
+    const text = String(opts.text ?? '');
+    const results = Object.keys(MERGES).map((merge) => {
+      const square = buildSquare({ ...opts, mode: '5x5', merge });
+      const enc = encrypt(square, text, opts);
+      return {
+        merge,
+        square,
+        cipher: enc.cipher,
+        pairs: enc.tokens.filter((t) => t.type === 'pair').map((t) => t.value),
+        dropped: enc.stats.droppedLetters.slice(),
+      };
+    });
+    const ref = results.find((r) => r.merge === base);
+    for (const r of results) {
+      const same = ref && r.pairs.length === ref.pairs.length;
+      r.sameLength = Boolean(same);
+      r.diff = same ? r.pairs.filter((p, i) => p !== ref.pairs[i]).length : r.pairs.length;
+      r.isBase = r.merge === base;
+    }
+    return results;
+  }
+
+  // キーワードのあとの並べ方をくらべる。5通りの方陣を返す
+  function compareFills(options) {
+    const opts = options || {};
+    return FILLS.map((fill) => {
+      const square = buildSquare({ ...opts, fill });
+      return { fill, square, seq: square.rows.flat().join('') };
+    });
+  }
+
   globalThis.PolybiusCore = {
     MAX_INPUT,
     MODES,
@@ -341,6 +376,8 @@
     alphabetFor,
     orderedAlphabet,
     buildSquare,
+    compareMerges,
+    compareFills,
     encrypt,
     formatCipher,
     decrypt,

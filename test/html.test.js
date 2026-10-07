@@ -46,7 +46,7 @@ test('主要な要素の id がそろっている', () => {
 
 test('タブとパネルが id で結ばれている', () => {
   const tabs = [...html.matchAll(/<button class="tab[^"]*" id="tab-btn-(\w+)"[^>]*aria-controls="tab-(\w+)"/g)];
-  assert.equal(tabs.length, 4);
+  assert.equal(tabs.length, 5);
   for (const [, btnKey, panelKey] of tabs) {
     assert.equal(btnKey, panelKey);
     assert.ok(html.includes(`<section id="tab-${panelKey}"`), `tab-${panelKey} のパネルがない`);

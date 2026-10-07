@@ -127,9 +127,9 @@
     return notes;
   }
 
-  // Rendering matrix
-  function renderMatrix(containerId, square) {
-    const container = $(containerId);
+  // Rendering matrix（id でも要素でも受け取る。くらべるタブは小さな方陣を並べる）
+  function renderMatrix(target, square) {
+    const container = typeof target === 'string' ? $(target) : target;
     if (!container) return;
 
     container.replaceChildren();
@@ -505,6 +505,72 @@
     })];
   }
 
+  // くらべるタブ。同じ平文と鍵で、流儀ごとの違いを並べる
+  function setupCompare() {
+    const textEl = $('cmp-text');
+    const kwEl = $('cmp-keyword');
+    if (!textEl || !kwEl) return;
+
+    const renderMerges = () => {
+      const list = $('cmp-merge');
+      list.replaceChildren();
+      const results = Core.compareMerges({ mode: '5x5', keyword: kwEl.value, text: textEl.value });
+      for (const r of results) {
+        const item = document.createElement('div');
+        item.className = r.isBase ? 'cmp-item base' : 'cmp-item';
+
+        const head = document.createElement('div');
+        head.className = 'cmp-head';
+        const name = document.createElement('strong');
+        name.textContent = t(`adv.merge.${r.merge}`);
+        const note = document.createElement('span');
+        note.className = 'cmp-note';
+        if (r.isBase) note.textContent = t('cmp.base');
+        else if (!r.sameLength) note.textContent = t('cmp.lengthDiff', { chars: r.dropped.join('').toLowerCase() });
+        else if (r.diff === 0) note.textContent = t('cmp.same');
+        else note.textContent = t('cmp.diff', { count: r.diff });
+        head.append(name, note);
+
+        const cipher = document.createElement('code');
+        cipher.className = 'cmp-cipher';
+        cipher.textContent = r.cipher || t('cmp.empty');
+
+        item.append(head, cipher);
+        list.appendChild(item);
+      }
+    };
+
+    const renderFills = () => {
+      const grid = $('cmp-fill');
+      grid.replaceChildren();
+      if (!kwEl.value.trim()) {
+        const hint = document.createElement('p');
+        hint.className = 'hint';
+        hint.textContent = t('cmp.keywordHint');
+        grid.appendChild(hint);
+      }
+      for (const r of Core.compareFills({ mode: '5x5', keyword: kwEl.value })) {
+        const cell = document.createElement('div');
+        cell.className = 'cmp-square';
+        const name = document.createElement('div');
+        name.className = 'cmp-name';
+        name.textContent = t(`adv.fill.${r.fill}`);
+        const box = document.createElement('div');
+        cell.append(name, box);
+        renderMatrix(box, r.square);
+        grid.appendChild(cell);
+      }
+    };
+
+    const update = () => {
+      renderMerges();
+      renderFills();
+    };
+    textEl.addEventListener('input', update);
+    kwEl.addEventListener('input', update);
+    update();
+  }
+
   // ヘルプの「?」。hover だけでは触る画面で読めないので、押しても出るようにする
   function setupHelp() {
     const closeAll = () => document.querySelectorAll('.help-icon.open').forEach((x) => x.classList.remove('open'));
@@ -574,6 +640,7 @@
     setupEncrypt();
     setupDecrypt();
     setupMatrix();
+    setupCompare();
     setupHelp();
     for (const tab of Object.keys(PANELS)) renderPreview(tab);
   }

@@ -173,3 +173,51 @@ test('6×6では流儀の指定を無視する（36マスに全部入る）', ()
   assert.equal(s.merge, C.DEFAULT_MERGE);
   assert.deepEqual(s.map, {});
 });
+
+test('流儀の比較は5通りを返し、基準との違いを数える', () => {
+  const results = C.compareMerges({ mode: '5x5', keyword: '', text: 'kick the quiz' });
+  assert.equal(results.length, Object.keys(C.MERGES).length);
+  const base = results.find((r) => r.isBase);
+  assert.equal(base.merge, C.DEFAULT_MERGE);
+  assert.equal(base.diff, 0);
+  assert.equal(base.sameLength, true);
+  const ck = results.find((r) => r.merge === 'ck');
+  // kick の k が c として読まれるので、2か所だけ変わる
+  assert.equal(ck.diff, 2);
+  assert.equal(ck.sameLength, true);
+  const q = results.find((r) => r.merge === 'q');
+  // q を外す流儀では quiz の q が落ちるので、長さが変わる
+  assert.equal(q.sameLength, false);
+  assert.deepEqual(q.dropped, ['Q']);
+});
+
+test('v/w と u/v は、v も w も鍵に入らない限り同じ暗号文になる', () => {
+  // V と W が隣り合うので、どちらを外しても22番目以降の位置が変わらない
+  const pick = (kw, text) => {
+    const r = C.compareMerges({ mode: '5x5', keyword: kw, text });
+    return [r.find((x) => x.merge === 'vw').cipher, r.find((x) => x.merge === 'uv').cipher];
+  };
+  const [a1, b1] = pick('', 'world');
+  assert.equal(a1, b1);
+  const [a2, b2] = pick('key', 'world');
+  assert.equal(a2, b2);
+  // 鍵に w を入れると、並びがずれて結果が変わる
+  const [a3, b3] = pick('wave', 'world');
+  assert.notEqual(a3, b3);
+});
+
+test('充填順の比較は5通りの方陣を返す', () => {
+  const results = C.compareFills({ mode: '5x5', keyword: 'mammoth' });
+  assert.equal(results.length, C.FILLS.length);
+  assert.deepEqual(results.map((r) => r.fill), C.FILLS);
+  assert.equal(new Set(results.map((r) => r.seq)).size, C.FILLS.length, '5通りとも違う並びになるはず');
+  for (const r of results) assert.equal(r.seq.length, 25);
+});
+
+test('キーワードがないと、鍵の置き方だけでは違いが出ない', () => {
+  const results = C.compareFills({ mode: '5x5', keyword: '' });
+  const seqs = Object.fromEntries(results.map((r) => [r.fill, r.seq]));
+  assert.equal(seqs.after, seqs.before);
+  assert.equal(seqs.after, seqs.last);
+  assert.notEqual(seqs.after, seqs.reverseAlphabet);
+});
