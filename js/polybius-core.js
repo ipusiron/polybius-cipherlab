@@ -1,17 +1,39 @@
 // Polybius CipherLab の計算部（DOM を使わない）。globalThis.PolybiusCore に置く
 // - 方陣の生成は純粋関数。呼び出し側の状態を書き換えない（タブごとに別の方陣を持てる）
+// - 25マスに収める流儀・キーワードの充填順・座標のラベル・座標の順を選べる
+//   （ほかのツールが採る流儀が割れているため。既定は I/J 統合・先頭優先・1〜5・行→列）
 // - 暗号化はトークン列（pair / sep / symbol）を返し、文字列の組み立ては formatCipher が行う
 //   → 記号や1桁の数字が混じっても、ペアの境界が消えない
-// - 復号は読み取れなかったものを捨てずに返す（範囲外のペア・余りの桁・数字でない文字）
+// - 復号は読み取れなかったものを捨てずに返す（範囲外のペア・余りの桁・ラベルでない文字）
 (() => {
   'use strict';
 
   const MAX_INPUT = 10000;
 
-  // 盤面の種類。alphabet は方陣に並べる文字、merge は「入力の文字 → 方陣の文字」の読み替え
+  const BASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const DIGITS = '0123456789';
+
+  // 25マスに収めるために、どの文字を落として、どの文字として読むか
+  // to が空の流儀（q）は、その文字を暗号化できない（落とす）
+  const MERGES = {
+    ij: { drop: 'J', to: 'I' },
+    ck: { drop: 'K', to: 'C' },
+    vw: { drop: 'W', to: 'V' },
+    uv: { drop: 'V', to: 'U' },
+    q: { drop: 'Q', to: '' },
+  };
+  const DEFAULT_MERGE = 'ij';
+
+  // キーワードのあとに残りの文字をどう並べるか（Rumkin が選べる5通りに合わせる）
+  const FILLS = ['after', 'before', 'last', 'reverseKey', 'reverseAlphabet'];
+  const DEFAULT_FILL = 'after';
+
+  const ORDERS = ['rowcol', 'colrow'];
+  const DEFAULT_ORDER = 'rowcol';
+
   const MODES = {
-    '5x5': { size: 5, alphabet: 'ABCDEFGHIKLMNOPQRSTUVWXYZ', merge: { J: 'I' } },
-    '6x6': { size: 6, alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', merge: {} },
+    '5x5': { size: 5, digits: '12345', letters: 'ADFGX' },
+    '6x6': { size: 6, digits: '123456', letters: 'ADFGVX' },
   };
   const DEFAULT_MODE = '5x5';
 
@@ -31,26 +53,59 @@
     return { text, truncated: Math.max(0, chars.length - MAX_INPUT), controls };
   }
 
+  // そのモードと流儀で、方陣に並べる文字と、入力の読み替えを決める
+  function alphabetFor(mode, merge) {
+    if (mode === '6x6') return { alphabet: BASE + DIGITS, map: {} };
+    const spec = MERGES[merge] || MERGES[DEFAULT_MERGE];
+    const alphabet = [...BASE].filter((c) => c !== spec.drop).join('');
+    const map = spec.to ? { [spec.drop]: spec.to } : {};
+    return { alphabet, map };
+  }
+
   // キーワードの整形。使えない文字と、読み替えた文字と、重複をそれぞれ記録する
-  function prepareKeyword(raw, mode) {
-    const spec = modeOf(mode);
+  // fill が last のときは、同じ文字が2回出たら「あとに出たほう」を残す
+  function prepareKeyword(raw, mode, options) {
+    const opts = options || {};
+    const merge = MERGES[opts.merge] ? opts.merge : DEFAULT_MERGE;
+    const fill = FILLS.includes(opts.fill) ? opts.fill : DEFAULT_FILL;
+    const { alphabet, map } = alphabetFor(mode, merge);
     const chars = [];
     const dropped = [];
     const merged = [];
-    const seen = new Set();
-    for (const ch of String(raw ?? '')) {
+    // 鍵を逆順にする流儀は、重複を外す前に文字列ごと裏返す（Rumkin の mammoth → HTOMA に合わせる）
+    const source = fill === 'reverseKey' ? [...String(raw ?? '')].reverse().join('') : String(raw ?? '');
+    for (const ch of source) {
       const up = ch.toUpperCase();
-      const mapped = spec.merge[up] || up;
-      if (!spec.alphabet.includes(mapped)) {
+      const mapped = map[up] || up;
+      if (!alphabet.includes(mapped)) {
         if (ch.trim() !== '') dropped.push(ch);
         continue;
       }
       if (mapped !== up) merged.push({ from: up, to: mapped });
-      if (seen.has(mapped)) continue;
-      seen.add(mapped);
+      const at = chars.indexOf(mapped);
+      if (at >= 0) {
+        if (fill !== 'last') continue;
+        chars.splice(at, 1); // あとに出たほうを残す
+      }
       chars.push(mapped);
     }
     return { chars, dropped, merged };
+  }
+
+  // キーワードと残りの文字を、選んだ充填順で1列に並べる
+  function orderedAlphabet(alphabet, keywordChars, fill) {
+    const key = keywordChars.slice();
+    const rest = [...alphabet].filter((c) => !key.includes(c));
+    if (fill === 'reverseAlphabet') rest.reverse();
+    return fill === 'before' ? rest.concat(key) : key.concat(rest);
+  }
+
+  // 座標のラベル。長さが足りない・重複があるものは受け取らず、既定に戻して報告する
+  function normalizeLabels(raw, size, fallback) {
+    const text = String(raw ?? '').toUpperCase().replace(/\s+/g, '');
+    const chars = [...text];
+    const ok = chars.length === size && new Set(chars).size === size;
+    return { labels: ok ? chars : [...fallback], valid: ok || text === '' };
   }
 
   // 方陣を作る。state を持たず、必要なものをすべて戻り値に入れる
@@ -59,42 +114,65 @@
     const mode = MODES[opts.mode] ? opts.mode : DEFAULT_MODE;
     const spec = modeOf(mode);
     const size = spec.size;
-    const keyword = prepareKeyword(opts.keyword, mode);
+    const merge = mode === '5x5' && MERGES[opts.merge] ? opts.merge : DEFAULT_MERGE;
+    const fill = FILLS.includes(opts.fill) ? opts.fill : DEFAULT_FILL;
+    const order = ORDERS.includes(opts.order) ? opts.order : DEFAULT_ORDER;
+    const { alphabet, map } = alphabetFor(mode, merge);
 
-    const ordered = keyword.chars.slice();
-    const used = new Set(ordered);
-    for (const ch of spec.alphabet) {
-      if (!used.has(ch)) {
-        used.add(ch);
-        ordered.push(ch);
-      }
-    }
+    const keyword = prepareKeyword(opts.keyword, mode, { merge, fill });
+    const ordered = orderedAlphabet(alphabet, keyword.chars, fill);
 
     const rows = [];
     for (let r = 0; r < size; r++) rows.push(ordered.slice(r * size, (r + 1) * size));
+
+    const rowSpec = normalizeLabels(opts.rowLabels, size, spec.digits);
+    const colSpec = normalizeLabels(opts.colLabels, size, spec.digits);
+    const rowLabels = rowSpec.labels;
+    const colLabels = colSpec.labels;
+
+    const pairOf = (r, c) => (order === 'colrow' ? colLabels[c] + rowLabels[r] : rowLabels[r] + colLabels[c]);
 
     const charToPair = {};
     const pairToChar = {};
     for (let r = 0; r < size; r++) {
       for (let c = 0; c < size; c++) {
-        const pair = `${r + 1}${c + 1}`;
+        const pair = pairOf(r, c);
         charToPair[rows[r][c]] = pair;
         pairToChar[pair] = rows[r][c];
       }
     }
-    // 読み替える文字（5×5 の J）も引けるようにする。逆引きには入れない
-    for (const [from, to] of Object.entries(spec.merge)) {
+    // 読み替える文字（5×5 の J など）も引けるようにする。逆引きには入れない
+    for (const [from, to] of Object.entries(map)) {
       if (charToPair[to]) charToPair[from] = charToPair[to];
     }
+
+    // 復号でペアの材料として読む文字。数字のラベルなら 0〜9 すべてを読み、範囲外を見つける
+    const labelChars = [...new Set(rowLabels.concat(colLabels))];
+    const numericLabels = labelChars.every((c) => DIGITS.includes(c));
+    const pairChars = new Set(numericLabels ? [...DIGITS] : labelChars);
 
     return {
       mode,
       size,
+      merge,
+      fill,
+      order,
       rows,
+      rowLabels,
+      colLabels,
+      labelsValid: rowSpec.valid && colSpec.valid,
+      numericLabels,
+      pairChars,
       charToPair,
       pairToChar,
-      merge: spec.merge,
-      keyword: { text: String(opts.keyword ?? ''), chars: keyword.chars, dropped: keyword.dropped, merged: keyword.merged },
+      map,
+      alphabet,
+      keyword: {
+        text: String(opts.keyword ?? ''),
+        chars: keyword.chars,
+        dropped: keyword.dropped,
+        merged: keyword.merged,
+      },
       keywordChars: new Set(keyword.chars),
     };
   }
@@ -114,13 +192,22 @@
     const preserveSymbols = opts.preserveSymbols === true;
     const tokens = [];
     const mapping = [];
-    const stats = { pairs: 0, separators: 0, symbols: 0, droppedSymbols: 0, droppedNonAscii: 0, merged: [], droppedSpaces: 0 };
+    const stats = {
+      pairs: 0,
+      separators: 0,
+      symbols: 0,
+      droppedSymbols: 0,
+      droppedNonAscii: 0,
+      droppedLetters: [],
+      merged: [],
+      droppedSpaces: 0,
+    };
 
     for (const ch of String(text ?? '')) {
       const up = ch.toUpperCase();
-      const mapped = square.merge[up] || up;
+      const mapped = square.map[up] || up;
       const pair = square.charToPair[mapped];
-      if (pair && /[A-Z0-9]/.test(mapped)) {
+      if (pair) {
         if (mapped !== up && !stats.merged.includes(up)) stats.merged.push(up);
         tokens.push({ type: 'pair', value: pair });
         mapping.push({ left: ch, right: pair, kind: 'pair' });
@@ -139,13 +226,15 @@
         }
         continue;
       }
-      if (preserveSymbols && isPlainSymbol(ch)) {
+      // 方陣に入っていない英字（Q を外す流儀など）は、記号ではなく「使えない文字」として数える
+      if (/[A-Z]/.test(up) && !stats.droppedLetters.includes(up)) stats.droppedLetters.push(up);
+      // 方陣にない英字は、そのまま出すとペアと見分けがつかないので暗号文に出さない
+      if (preserveSymbols && isPlainSymbol(ch) && !/[A-Z]/.test(up)) {
         tokens.push({ type: 'symbol', value: ch });
         mapping.push({ left: ch, right: ch, kind: 'symbol' });
         stats.symbols++;
         continue;
       }
-      // 方陣にない文字。非ASCII は「そのまま出力」を選んでいても暗号文へ出さない
       mapping.push({ left: ch, right: '—', kind: 'dropped' });
       if (isPlainSymbol(ch)) stats.droppedSymbols++;
       else stats.droppedNonAscii++;
@@ -161,9 +250,7 @@
     let prev = null;
     for (const tok of tokens) {
       if (prev) {
-        const needSpace = concat
-          ? tok.type === 'symbol' || prev.type === 'symbol'
-          : true;
+        const needSpace = concat ? tok.type === 'symbol' || prev.type === 'symbol' : true;
         if (needSpace) out += ' ';
       }
       out += tok.value;
@@ -173,38 +260,43 @@
   }
 
   // 復号。読み取れなかったものは捨てずに、位置を保ったまま印をつけて返す
+  // 5×5で読み替えのある流儀では、戻した文字が2通りに読めることを ambiguous で知らせる
   function decrypt(square, raw) {
-    const size = square.size;
     const mapping = [];
-    const stats = { decoded: 0, outOfRange: 0, leftover: 0, symbols: 0, separators: 0 };
+    const stats = { decoded: 0, outOfRange: 0, leftover: 0, symbols: 0, separators: 0, ambiguous: 0 };
     const out = [];
+    const mergedFrom = {};
+    for (const [from, to] of Object.entries(square.map)) {
+      if (!mergedFrom[to]) mergedFrom[to] = [];
+      mergedFrom[to].push(from);
+    }
 
-    const pushPairs = (digits) => {
-      for (let i = 0; i + 1 < digits.length; i += 2) {
-        const t = digits.slice(i, i + 2);
-        const r = Number(t[0]);
-        const c = Number(t[1]);
-        const ch = r >= 1 && r <= size && c >= 1 && c <= size ? square.pairToChar[t] : undefined;
+    const pushPairs = (buf) => {
+      for (let i = 0; i + 1 < buf.length; i += 2) {
+        const t = buf.slice(i, i + 2);
+        const ch = square.pairToChar[t];
         if (ch) {
           out.push(ch.toLowerCase());
-          mapping.push({ left: t, right: ch.toLowerCase(), kind: 'pair' });
+          const alt = mergedFrom[ch];
+          mapping.push({ left: t, right: ch.toLowerCase(), kind: 'pair', alt: alt ? alt.join('').toLowerCase() : '' });
           stats.decoded++;
+          if (alt) stats.ambiguous++;
         } else {
           out.push(`[${t}]`);
           mapping.push({ left: t, right: '?', kind: 'out-of-range' });
           stats.outOfRange++;
         }
       }
-      if (digits.length % 2 === 1) {
-        const last = digits[digits.length - 1];
+      if (buf.length % 2 === 1) {
+        const last = buf[buf.length - 1];
         out.push(last);
         mapping.push({ left: last, right: last, kind: 'leftover' });
         stats.leftover++;
       }
     };
 
-    // 空白・改行で区切り、さらに「/」でも区切る。数字の並びは2桁ずつ読む
-    for (const chunk of String(raw ?? '').split(/[\s]+/)) {
+    // 空白・改行で区切り、さらに「/」でも区切る。ラベルに使う文字の並びを2つずつ読む
+    for (const chunk of String(raw ?? '').split(/\s+/)) {
       if (chunk === '') continue;
       const parts = chunk.split('/');
       parts.forEach((part, idx) => {
@@ -214,19 +306,20 @@
           stats.separators++;
         }
         if (part === '') return;
-        let digits = '';
+        let buf = '';
         for (const ch of part) {
-          if (ch >= '0' && ch <= '9') {
-            digits += ch;
+          const up = ch.toUpperCase();
+          if (square.pairChars.has(up)) {
+            buf += up;
             continue;
           }
-          pushPairs(digits);
-          digits = '';
+          pushPairs(buf);
+          buf = '';
           out.push(ch);
           mapping.push({ left: ch, right: ch, kind: 'symbol' });
           stats.symbols++;
         }
-        pushPairs(digits);
+        pushPairs(buf);
       });
     }
 
@@ -236,9 +329,17 @@
   globalThis.PolybiusCore = {
     MAX_INPUT,
     MODES,
+    MERGES,
+    FILLS,
+    ORDERS,
     DEFAULT_MODE,
+    DEFAULT_MERGE,
+    DEFAULT_FILL,
+    DEFAULT_ORDER,
     normalizeInput,
     prepareKeyword,
+    alphabetFor,
+    orderedAlphabet,
     buildSquare,
     encrypt,
     formatCipher,

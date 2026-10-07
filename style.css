@@ -220,6 +220,28 @@ textarea{resize:vertical}
 .mt{margin-top:10px}
 .gap{gap:10px; margin-top:8px}
 
+/* 詳しい設定（ほかのツールの流儀に合わせる） */
+.advanced{
+  margin:10px 0;
+  padding:10px 12px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+.advanced summary{
+  cursor:pointer;
+  font-size:14px;
+  color:var(--text);
+}
+.advanced .hint{margin:8px 0 10px}
+.adv-grid{
+  display:grid;
+  gap:10px;
+  grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));
+}
+.adv-grid .field{min-width:0}
+.adv-grid select:disabled{opacity:.55; cursor:not-allowed}
+
 .mapping-list{
   margin:10px 0 0;
   padding-left:20px;
