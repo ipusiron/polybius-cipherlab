@@ -21,10 +21,50 @@
     matrix: { mode: 'mode-matrix', keyword: 'keyword-matrix', preview: 'matrix-container', status: null },
   };
 
+  // 「詳しい設定」。ツールによって流儀が割れるので、合わせられるようにする
+  const PRESETS = {
+    default: { merge: 'ij', fill: 'after', order: 'rowcol', labels: 'digits' },
+    cryptocorner: { merge: 'ij', fill: 'after', order: 'colrow', labels: 'digits' },
+    adfgx: { merge: 'ij', fill: 'after', order: 'rowcol', labels: 'letters' },
+    tapcode: { merge: 'ck', fill: 'after', order: 'rowcol', labels: 'digits' },
+  };
+
+  const ADV_FIELDS = [
+    { key: 'preset', values: ['default', 'cryptocorner', 'adfgx', 'tapcode', 'custom'] },
+    { key: 'merge', values: ['ij', 'ck', 'vw', 'uv', 'q'] },
+    { key: 'fill', values: ['after', 'last', 'reverseKey', 'reverseAlphabet', 'before'] },
+    { key: 'order', values: ['rowcol', 'colrow'] },
+    { key: 'labels', values: ['digits', 'letters', 'custom'] },
+  ];
+
   // Utilities
+  function advancedOf(tab) {
+    const get = (key) => {
+      const el = $(`${key}-${tab}`);
+      return el ? el.value : undefined;
+    };
+    const mode = $(PANELS[tab].mode).value;
+    const spec = Core.MODES[mode] || Core.MODES[Core.DEFAULT_MODE];
+    const labels = get('labels');
+    let rowLabels = '';
+    let colLabels = '';
+    if (labels === 'letters') {
+      rowLabels = spec.letters;
+      colLabels = spec.letters;
+    } else if (labels === 'custom') {
+      rowLabels = ($(`rowLabels-${tab}`) || {}).value || '';
+      colLabels = ($(`colLabels-${tab}`) || {}).value || '';
+    }
+    return { merge: get('merge'), fill: get('fill'), order: get('order'), rowLabels, colLabels };
+  }
+
   function squareOf(tab) {
     const p = PANELS[tab];
-    return Core.buildSquare({ mode: $(p.mode).value, keyword: $(p.keyword).value });
+    return Core.buildSquare({
+      mode: $(p.mode).value,
+      keyword: $(p.keyword).value,
+      ...advancedOf(tab),
+    });
   }
 
   function setStatus(id, parts) {
@@ -233,8 +273,10 @@
   function setupEncrypt() {
     const update = () => {
       const square = renderPreview('encrypt');
-      setStatus('enc-status', keywordNotes(square));
+      setStatus('enc-status', keywordNotes(square).concat(labelNotes('encrypt', square)));
     };
+    const slot = document.querySelector('.advanced-slot[data-advanced="encrypt"]');
+    if (slot) buildAdvanced(slot, update);
     $('mode-enc').addEventListener('change', update);
     $('keyword-enc').addEventListener('input', update);
 
@@ -249,7 +291,7 @@
       $('enc-output').value = result.cipher;
 
       const s = result.stats;
-      const parts = keywordNotes(square);
+      const parts = keywordNotes(square).concat(labelNotes('encrypt', square));
       if (!norm.text) parts.push(t('status.empty'));
       else if (s.pairs) parts.push(t('status.encrypted', { pairs: s.pairs }));
       else parts.push(t('status.nothing'));
@@ -280,8 +322,10 @@
   function setupDecrypt() {
     const update = () => {
       const square = renderPreview('decrypt');
-      setStatus('dec-status', keywordNotes(square));
+      setStatus('dec-status', keywordNotes(square).concat(labelNotes('decrypt', square)));
     };
+    const slot = document.querySelector('.advanced-slot[data-advanced="decrypt"]');
+    if (slot) buildAdvanced(slot, update);
     $('mode-dec').addEventListener('change', update);
     $('keyword-dec').addEventListener('input', update);
 
@@ -290,6 +334,12 @@
       $('dec-input').value = $('enc-output').value;
       $('mode-dec').value = $('mode-enc').value;
       $('keyword-dec').value = $('keyword-enc').value;
+      for (const key of ['preset', 'merge', 'fill', 'order', 'labels', 'rowLabels', 'colLabels']) {
+        const from = $(`${key}-encrypt`);
+        const to = $(`${key}-decrypt`);
+        if (from && to) to.value = from.value;
+      }
+      $('mode-dec').dispatchEvent(new Event('change'));
       update();
       showToast(t('toast.synced'));
     });
@@ -301,7 +351,7 @@
       $('dec-output').value = result.plain;
 
       const s = result.stats;
-      const parts = keywordNotes(square);
+      const parts = keywordNotes(square).concat(labelNotes('decrypt', square));
       if (!norm.text) parts.push(t('status.empty'));
       else if (s.decoded) parts.push(t('status.decoded', { count: s.decoded }));
       else parts.push(t('status.nothingDecoded'));
@@ -327,8 +377,125 @@
 
   function setupMatrix() {
     const update = () => renderPreview('matrix');
+    const slot = document.querySelector('.advanced-slot[data-advanced="matrix"]');
+    if (slot) buildAdvanced(slot, update);
     $('mode-matrix').addEventListener('change', update);
     $('keyword-matrix').addEventListener('input', update);
+  }
+
+  // 「詳しい設定」を組み立てる。3つのタブで同じ作りなので、スロットから生成する
+  function buildAdvanced(slot, onChange) {
+    const tab = slot.dataset.advanced;
+    const details = document.createElement('details');
+    details.className = 'advanced';
+
+    const summary = document.createElement('summary');
+    summary.textContent = t('adv.summary');
+    details.appendChild(summary);
+
+    const note = document.createElement('p');
+    note.className = 'hint';
+    note.textContent = t('adv.note');
+    details.appendChild(note);
+
+    const grid = document.createElement('div');
+    grid.className = 'adv-grid';
+
+    for (const f of ADV_FIELDS) {
+      const field = document.createElement('div');
+      field.className = 'field';
+      const label = document.createElement('label');
+      label.className = 'label';
+      label.htmlFor = `${f.key}-${tab}`;
+      label.textContent = t(`adv.${f.key}`);
+      const sel = document.createElement('select');
+      sel.id = `${f.key}-${tab}`;
+      for (const v of f.values) {
+        const opt = document.createElement('option');
+        opt.value = v;
+        opt.textContent = t(`adv.${f.key}.${v}`);
+        sel.appendChild(opt);
+      }
+      field.append(label, sel);
+      grid.appendChild(field);
+    }
+
+    // ラベルを自分で決めるときだけ出す入力欄
+    for (const key of ['rowLabels', 'colLabels']) {
+      const field = document.createElement('div');
+      field.className = 'field label-input';
+      field.hidden = true;
+      const label = document.createElement('label');
+      label.className = 'label';
+      label.htmlFor = `${key}-${tab}`;
+      label.textContent = t(`adv.${key}`);
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = `${key}-${tab}`;
+      input.autocapitalize = 'characters';
+      input.spellcheck = false;
+      field.append(label, input);
+      grid.appendChild(field);
+    }
+
+    details.appendChild(grid);
+    slot.replaceChildren(details);
+
+    const syncVisibility = () => {
+      const mode = $(PANELS[tab].mode).value;
+      const mergeSel = $(`merge-${tab}`);
+      mergeSel.disabled = mode !== '5x5'; // 6×6は36マスなので読み替えが要らない
+      const custom = $(`labels-${tab}`).value === 'custom';
+      details.querySelectorAll('.label-input').forEach((el) => {
+        el.hidden = !custom;
+      });
+    };
+
+    // プリセットを選んだら個別の設定をそろえる。個別を触ったら、一致するプリセットを選び直す
+    $(`preset-${tab}`).addEventListener('change', () => {
+      const preset = PRESETS[$(`preset-${tab}`).value];
+      if (preset) {
+        for (const [key, value] of Object.entries(preset)) {
+          const el = $(`${key}-${tab}`);
+          if (el) el.value = value;
+        }
+      }
+      syncVisibility();
+      onChange();
+    });
+
+    const matchPreset = () => {
+      const now = {
+        merge: $(`merge-${tab}`).value,
+        fill: $(`fill-${tab}`).value,
+        order: $(`order-${tab}`).value,
+        labels: $(`labels-${tab}`).value,
+      };
+      const hit = Object.entries(PRESETS).find(([, v]) => Object.entries(v).every(([k, x]) => now[k] === x));
+      $(`preset-${tab}`).value = hit ? hit[0] : 'custom';
+    };
+
+    for (const key of ['merge', 'fill', 'order', 'labels']) {
+      $(`${key}-${tab}`).addEventListener('change', () => {
+        matchPreset();
+        syncVisibility();
+        onChange();
+      });
+    }
+    for (const key of ['rowLabels', 'colLabels']) {
+      $(`${key}-${tab}`).addEventListener('input', onChange);
+    }
+    $(PANELS[tab].mode).addEventListener('change', syncVisibility);
+    syncVisibility();
+  }
+
+  // ラベルの指定が通らなかったときの注意書き
+  function labelNotes(tab, square) {
+    if (square.labelsValid) return [];
+    return [t('adv.labelsInvalid', {
+      size: square.size,
+      fallback: (Core.MODES[square.mode] || Core.MODES[Core.DEFAULT_MODE]).digits,
+    })];
   }
 
   // ヘルプの「?」。hover だけでは触る画面で読めないので、押しても出るようにする
