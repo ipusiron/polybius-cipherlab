@@ -247,3 +247,22 @@ test('英語版のディレクトリー構造にも全ファイルが載って�
   const lines = tree[1].trim().split('\n');
   for (const line of lines.slice(1)) assert.match(line, /# .+$/, `説明のない行: ${line}`);
 });
+
+test('ユースケースの「このツールならではの使い方」の値は計算部と同じ（日英）', () => {
+  const [ja, en] = [readme, readmeEn];
+  const sq5 = C.buildSquare({ mode: '5x5', merge: 'ij', fill: 'standard', keyword: '' });
+  const hello = C.encrypt(sq5, 'HELLO', {}).cipher;
+  assert.equal(hello, '23 15 31 31 34');
+  assert.ok([...hello.replace(/ /g, '')].every((d) => d >= '1' && d <= '5'));
+  assert.ok(ja.includes('HELLOを暗号化すると23 15 31 31 34') && en.includes('HELLO with the standard 5x5 square gives 23 15 31 31 34'));
+  const torch = (ch) => { const s = C.torchSignal(ch); return [s.group, s.index]; };
+  assert.deepEqual('ΝΙΚΗ'.split('').map(torch), [[3, 3], [2, 4], [2, 5], [2, 2]]);
+  assert.ok(ja.includes('Νが3と3、Ιが2と4、Κが2と5、Ηが2と2') && en.includes('Ν is 3 and 3, Ι is 2 and 4, Κ is 2 and 5, and Η is 2 and 2'));
+  assert.equal(C.GREEK_GROUP_SIZE, 5);
+  const sq6 = C.buildSquare({ mode: '6x6', merge: 'none', fill: 'standard', keyword: '' });
+  assert.equal(sq6.rows.flat().length, 36);
+  const c6 = C.encrypt(sq6, 'HELLO2026', {}).cipher;
+  assert.equal(c6, '22 15 26 26 33 55 53 55 63');
+  assert.ok(c6.replace(/ /g, '').includes('6'));
+  assert.ok(ja.includes('HELLO2026は22 15 26 26 33 55 53 55 63') && en.includes('HELLO2026 becomes 22 15 26 26 33 55 53 55 63'));
+});
