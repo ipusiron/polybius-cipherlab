@@ -125,6 +125,12 @@ The three working tabs hold **their own settings**. Changing the keyword in the 
 
 ## 🎯 Use cases
 
+### Ways of using this tool in particular
+
+- Confirming the coordinate idea of addressing by row and column (mathematics and spreadsheet classes): the square represents a letter as a pair of "row digit, column digit". Encrypting HELLO with the standard 5x5 square gives 23 15 31 31 34, and every digit stays within 1 to 5. It is the same way of pointing as a spreadsheet address like A1, a map grid, or the coordinates of a chess or Go board. You can also see that one letter becomes two digits, so the length doubles
+- Confirming that a two-digit base-5 number was once a count of torches (history and numeral-system classes): the Polybius square was originally a way to send one letter over a distance by the counts of torches on the left and right (each 1 to 5). In the "torch signal" tab, for the Greek word ΝΙΚΗ (victory) Ν is 3 and 3, Ι is 2 and 4, Κ is 2 and 5, and Η is 2 and 2. It is an old example of base-5 place value, lining up two of five states to represent 5x5 = 25
+- Confirming that enlarging the square also fits digits (encoding design): switching to 6x6 fits 36 cells, the 26 letters plus 10 digits, and each digit uses 1 to 6. HELLO2026 becomes 22 15 26 26 33 55 53 55 63. You can see the design choice in fixed-length encoding between enlarging the table to fit more kinds of character in one cell and keeping the range of each digit small
+
 ### Learning security
 
 - Meet classical ciphers through a method you can work by hand, where position stands for a letter
