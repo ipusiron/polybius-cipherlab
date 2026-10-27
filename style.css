@@ -43,7 +43,7 @@ body{
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-body:not([data-theme="light"]){
+html:not([data-theme="light"]) body{
   background: radial-gradient(1200px 700px at 20% -10%, #0e141d, #0b0d10 60%),
              radial-gradient(800px 500px at 110% 10%, #0e1319, transparent 60%);
 }

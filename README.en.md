@@ -305,6 +305,7 @@ polybius-cipherlab/
 ├── js/                     # scripts
 │   ├── polybius-core.js    # calculation layer (building the square, encryption, decryption; no DOM)
 │   ├── messages.js         # all interface text in Japanese and English
+│   ├── theme-init.js       # decides the theme before the first paint (loaded in <head>)
 │   └── i18n.js             # choosing the language and replacing the text on the page
 ├── test/                   # tests (run with node --test)
 │   ├── load.js             # loads the browser scripts, plus reference implementations
@@ -315,6 +316,7 @@ polybius-cipherlab/
 │   ├── html.test.js        # static checks on index.html (CSP, ids, aria, external references)
 │   ├── contrast.test.js    # contrast ratios (4.5:1 or better in both themes)
 │   ├── format.test.js      # guards against minified files and DOM use in the calculation layer
+│   ├── theme-init.test.js  # the initial theme decision, and its load position in <head>
 │   └── readme.test.js      # recomputes the tables and examples in both READMEs
 ├── .github/                # GitHub settings
 │   └── workflows/          # GitHub Actions workflows
