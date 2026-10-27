@@ -712,42 +712,41 @@
   }
 
   // Theme management
+  // 最初のテーマは js/theme-init.js が <head> で決め、<html> の data-theme に書く。
+  // ここでは、その状態に合わせてアイコンと aria-label をそろえ、切り替えを受け持つ
   const THEME_KEY = 'theme';
 
-  function readTheme() {
-    try {
-      const saved = localStorage.getItem(THEME_KEY);
-      if (saved === 'light' || saved === 'dark') return saved;
-    } catch {
-      // 保存を読めない環境では、そのページの間だけ切り替える
-    }
-    const mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)');
-    return mq && mq.matches ? 'light' : 'dark';
+  function currentTheme() {
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
   }
 
-  function applyTheme(theme) {
+  function syncThemeUI() {
     const icon = document.querySelector('.theme-icon');
     const btn = $('theme-toggle');
-    if (theme === 'light') {
-      document.body.setAttribute('data-theme', 'light');
+    if (currentTheme() === 'light') {
       if (icon) icon.textContent = '🌙';
       if (btn) btn.setAttribute('aria-label', t('theme.toDark'));
     } else {
-      document.body.removeAttribute('data-theme');
       if (icon) icon.textContent = '☀️';
       if (btn) btn.setAttribute('aria-label', t('theme.toLight'));
     }
+  }
+
+  function applyTheme(theme) {
+    if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    else document.documentElement.removeAttribute('data-theme');
     try {
       localStorage.setItem(THEME_KEY, theme);
     } catch {
       // 保存できなくても表示は切り替わる
     }
+    syncThemeUI();
   }
 
   function initTheme() {
-    applyTheme(readTheme());
+    syncThemeUI();
     $('theme-toggle').addEventListener('click', () => {
-      applyTheme(document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+      applyTheme(currentTheme() === 'light' ? 'dark' : 'light');
     });
   }
 
@@ -769,7 +768,7 @@
         const list = $(id);
         if (list) list.replaceChildren();
       }
-      applyTheme(document.body.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+      syncThemeUI();
     });
   }
 

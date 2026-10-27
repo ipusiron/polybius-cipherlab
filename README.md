@@ -344,6 +344,7 @@ polybius-cipherlab/
 ├── js/                     # スクリプト
 │   ├── polybius-core.js    # 計算部（方陣の生成・暗号化・復号。DOMを使わない）
 │   ├── messages.js         # 画面に出す文言（日本語・英語）
+│   ├── theme-init.js       # 最初の描画の前にテーマを決める（<head>で読み込む）
 │   └── i18n.js             # 言語の選び方と、画面の文言の差し替え
 ├── test/                   # テスト（node --test で実行する）
 │   ├── load.js             # 画面と同じスクリプトの読み込みと、照合用の参照実装
@@ -354,6 +355,7 @@ polybius-cipherlab/
 │   ├── html.test.js        # index.html の静的な検査（CSP・id・aria・外部参照）
 │   ├── contrast.test.js    # 配色のコントラスト比（ライト・ダークとも4.5:1以上）
 │   ├── format.test.js      # 1行に詰め込んでいないか、計算部がDOMを使っていないか
+│   ├── theme-init.test.js  # テーマの初期判定と、<head>での読み込み位置
 │   └── readme.test.js      # README の表と例をコードで計算し直して照合する
 ├── .github/                # GitHub の設定
 │   └── workflows/          # GitHub Actions のワークフロー
