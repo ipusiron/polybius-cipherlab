@@ -266,3 +266,11 @@ test('ユースケースの「このツールならではの使い方」の値�
   assert.ok(c6.replace(/ /g, '').includes('6'));
   assert.ok(ja.includes('HELLO2026は22 15 26 26 33 55 53 55 63') && en.includes('HELLO2026 becomes 22 15 26 26 33 55 53 55 63'));
 });
+
+test('README の localStorage の説明が、実際に保存するキー（テーマと言語）と合っている', () => {
+  // 保存するのは script.js・theme-init.js の theme と、i18n.js の polybius-lang の2つ
+  assert.ok(read('js/i18n.js').includes("STORAGE_KEY = 'polybius-lang'"));
+  assert.ok(read('js/theme-init.js').includes("getItem('theme')"));
+  assert.ok(readme.includes('`localStorage` に保存するのはテーマと表示言語の選択だけ'));
+  assert.ok(read('README.en.md').includes('The only thing kept in `localStorage` is your theme and language choice'));
+});
