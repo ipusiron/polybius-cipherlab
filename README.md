@@ -265,7 +265,7 @@ hub: true
 - 外部のCDN・ライブラリー・アナリティクスを読み込みません
 - CSP（Content Security Policy）を `<meta>` で指定しています（`default-src 'self'`）
 - 画面への書き出しは `textContent` と要素の組み立てで行い、`innerHTML` を使いません
-- `localStorage` に保存するのはテーマの選択だけで、入力したテキストは保存しません
+- `localStorage` に保存するのはテーマと表示言語の選択だけで、入力したテキストは保存しません
 
 ---
 
