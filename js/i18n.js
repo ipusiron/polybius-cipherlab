@@ -30,21 +30,27 @@
     }
   }
 
-  // 文言を要素へ入れる。**…** は strong、改行は br（HTML として解釈しない）
+  // 文言を要素へ入れる。**…** は strong、改行は br、\u200b（折り返してよい所）は wbr（HTML として解釈しない）
   const TOKEN = /\*\*(.+?)\*\*/g;
+  function appendText(el, text) {
+    text.split('\u200b').forEach((part, i) => {
+      if (i) el.append(document.createElement('wbr'));
+      if (part) el.append(document.createTextNode(part));
+    });
+  }
   function renderRich(el, text) {
     el.replaceChildren();
     String(text).split('\n').forEach((line, i) => {
       if (i) el.append(document.createElement('br'));
       let last = 0;
       for (const m of line.matchAll(TOKEN)) {
-        if (m.index > last) el.append(document.createTextNode(line.slice(last, m.index)));
+        if (m.index > last) appendText(el, line.slice(last, m.index));
         const strong = document.createElement('strong');
-        strong.textContent = m[1];
+        appendText(strong, m[1]);
         el.append(strong);
         last = m.index + m[0].length;
       }
-      if (last < line.length) el.append(document.createTextNode(line.slice(last)));
+      if (last < line.length) appendText(el, line.slice(last));
     });
   }
 
