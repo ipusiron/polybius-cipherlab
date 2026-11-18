@@ -51,8 +51,8 @@ html:not([data-theme="light"]) body{
 .site-header{
   padding:32px 20px 10px;
 }
-/* Narrow screens: the title in the middle, the buttons under it. From 769px: three columns, the title centered on the page and the
-   buttons at the right end; the empty left column is as wide as the right one, so the buttons do not push the title off center */
+/* 狭い画面では、題名を中央に置き、その下にボタンを並べる。幅769px以上は3列にして、題名を画面の中央に、ボタンを右端に置く
+   （左の空きの列を右のボタンの列と同じ幅にして、ボタンのぶん題名が中央からずれないようにする） */
 .header-content{
   display:flex;
   flex-direction:column;
@@ -76,6 +76,8 @@ html:not([data-theme="light"]) body{
 }
 .site-header h1{margin:0;font-size:clamp(20px, 4.5vw, 28px);letter-spacing:.3px;overflow-wrap:anywhere}
 .subtitle{margin:.5rem 0 0;color:var(--muted);font-size:14px}
+/* 日本語の題名と説明文は、語の切れ目の <wbr>（と空白・句読点）でだけ折り返し、語の途中では折り返さない。1行に入らない長い語は折り返す（overflow-wrap） */
+.site-header h1, .subtitle{word-break:keep-all;overflow-wrap:anywhere}
 
 .header-buttons{
   display:flex;

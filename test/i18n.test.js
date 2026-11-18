@@ -102,3 +102,17 @@ test('座学の変換の例は、日英とも計算部の出力と合う', () =>
     assert.ok(M.t('study.how.result', null, lang).includes(C.encrypt(square, 'hello').cipher));
   }
 });
+
+test('日本語の題名と説明文は、語の切れ目でだけ折り返す（折り返してよい所を辞書と index.html の同じ所に置く）', () => {
+  const Z = String.fromCharCode(0x200b);
+  const title = ['Polybius CipherLab - ポリュビオス', '暗号の', '可視化', 'ツール'];
+  const subtitle = ['ポリュビオスの', 'チェッカー盤を', '用いて', '「アルファベット', '1文字⇔', '数字ペア」の', '変換を', '実現します'];
+  assert.deepEqual(M.DICT.ja['ui.title'].split(Z), title);
+  assert.deepEqual(M.DICT.ja['ui.subtitle'].split(Z), subtitle);
+  // 英語は空白で折り返すので置かない
+  for (const key of ['ui.title', 'ui.subtitle']) assert.ok(!M.DICT.en[key].includes(Z), key);
+  // JavaScript が動く前の index.html の文言も、同じ所に <wbr> を置く
+  const inner = (key) => html.match(new RegExp(`data-i18n="${key}">([^<]*(?:<wbr>[^<]*)*)<`))[1].split('<wbr>');
+  assert.deepEqual(inner('ui.title'), title);
+  assert.deepEqual(inner('ui.subtitle'), subtitle);
+});
